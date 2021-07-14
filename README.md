@@ -12,7 +12,7 @@
 - The function of the embedding area: embedding the information (hight bits of pixels in the adjustment area) in order to recovery the original image when decrypting.
 ## Details of the scheme
 1. the distribution of the block
-   ![image-20210714170843825](C:\Users\RMDE\AppData\Roaming\Typora\typora-user-images\image-20210714170843825.png)
+   ![distribution](D:\Project\TPE\distribution.png)
 2. encryption
 - Here we use the stream encipher
 
