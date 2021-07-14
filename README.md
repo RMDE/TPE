@@ -11,8 +11,14 @@
 - The function of the adjustment area: preserving the sum of pixel values in one block by adjusting high bits of pixels.
 - The function of the embedding area: embedding the information (hight bits of pixels in the adjustment area) in order to recovery the original image when decrypting.
 ## Details of the scheme
-1. the distribution of the block
-   ![distribution](distribution.png)
-2. encryption
-- Here we use the stream encipher
+1. room-reserving
+
+   - the distribution of the block
+
+     ![distribution](distribution.png)
+
+2. Encryption
+   - here we use the stream encipher
+3. Adjustment 
+   - goal: to keep the sum of pixels in the encrypted block as approximate as the original one  
 
