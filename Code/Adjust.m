@@ -31,28 +31,45 @@ function sub = Adjust(origin, blocksize, MSB, NUM, value)
     end
     % calculate the present sum of the block
     diff = dir_sum - double(sum(sum(sub(:,:))));
+    diff = diff - mod(diff, 2^(8-MSB)); 
     if diff < 0
         return ;
+    end
+    if diff > (2^8 - 2^(8-MSB)) * NUM
+        diff = (2^8 - 2^(8-MSB)) * NUM;
     end
     % calculate the number of bits that should be '1' for adjusting
     number = Generate(MSB);
     [~,count] = size(number);
     chan = zeros(1,count);
     for i = 1 : count
-        res = floor(diff / number(i));
-        if res > NUM
-            res = NUM;
+        if i == count
+            res = diff / number(i);
+            chan(i) = res;
+            break;
         end
+        % randomly select the count of 1 in ith bit of the pixels
+        up = floor(diff / number(i));
+        if up > NUM
+            up = NUM;
+        end
+        low = ceil((diff - (2^(8-i)- 2^(8-MSB))*NUM) / number(i));
+        if low < 0
+            low = 0;
+        end
+        res = round(rand(1)*(up-low))+low;
         chan(i) = res;
         diff = diff - res * number(i);
         if diff < 0
             break;
         end 
     end
+    
     % coving the high MSB bits of pixels in the adjustment area with suitable value
     for j = 1 : count
+        sel = randperm(NUM,chan(j)); % randomly select the pixel to change the value
         for i = 1 : chan(j)
-            sub(location_x(i),location_y(i)) = sub(location_x(i),location_y(i)) + number(j);
+            sub(location_x(sel(i)),location_y(sel(i))) = sub(location_x(sel(i)),location_y(sel(i))) + number(j);
         end
     end
     

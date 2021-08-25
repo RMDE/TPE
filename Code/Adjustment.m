@@ -3,6 +3,7 @@
 %origin: the image after room reserving and encipher progress
 %value: store the average pixel in every block of the original image
 %MSB: the number of every bit in adjustment area used for adjustment
+%NUM: the number of pixels that the adjustment area contains
 function AjImage = Adjustment( origin, blocksize, value, MSB, NUM)
 
 AjImage = origin;
