@@ -13,9 +13,13 @@
 ## Details of the scheme
 1. room-reserving
 
-   - the distribution of the block
+   - the first distribution of the block
 
      ![distribution](distribution.png)
+     
+   - the second distribution of the image
+
+     ![distribution2](distribution2.png)
 
 2. Encryption
    - here we use the stream encipher
