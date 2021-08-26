@@ -2,28 +2,47 @@
 %to adjust the MSB of NUM pixel in adjustment area in order to keep the thumbnail the same
 %origin: the image after room reserving and encipher progress
 %MSB: the number of every bit in adjustment area used for adjustment
-%NUM: the number of pixels that the adjustment area contains
+%NUM: the number of pixels that the adjustment area contains (type==1)
+%     the width of the embedding area at the edge of the image (type==0)
 %value: store the average pixel in every block of the original image
-
-function sub = Adjust(origin, blocksize, MSB, NUM, value)
+%type: illustrate the distribution of the adjustment areas. 
+%      1 means the embedding areas are in every block
+%      0 means unblocking and the whole embedding area is at the edge of the image
+function sub = Adjust(origin, blocksize, MSB, NUM, value, type)
     sub = origin;
     dir_sum = value*blocksize*blocksize;
-    location_x = zeros(1,NUM);
-    location_y = zeros(1,NUM);
-    k = 1;
-    % select the location of pixels that are to be adjusted later
-    for i = 1 : blocksize
-        if k > NUM
-            break;
-        end
-        for j = 1 : blocksize
+    if type == 1
+        location_x = zeros(1,NUM);
+        location_y = zeros(1,NUM);
+        k = 1;
+        % select the location of pixels that are to be adjusted later
+        for i = 1 : blocksize
             if k > NUM
                 break;
             end
-            location_x(k) = i;
-            location_y(k) = j;
-            k = k+1;
+            for j = 1 : blocksize
+                if k > NUM
+                    break;
+                end
+                location_x(k) = i;
+                location_y(k) = j;
+                k = k+1;
+            end
         end
+    end
+    if type == 0
+        tmp = (blocksize - NUM*2)^2;
+        k = 1;
+        location_x = zeros(1,tmp);
+        location_y = zeros(1,tmp);
+        for i = NUM+1 : blocksize-NUM
+            for j = NUM+1 : blocksize-NUM
+                location_x(k) = i;
+                location_y(k) = j;
+                k = k + 1;
+            end
+        end
+        NUM = tmp;
     end
     % covering the high MSB of pixels in the adjustment area with '0'
     for i = 1 : NUM

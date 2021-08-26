@@ -3,8 +3,12 @@
 %origin: the image after room reserving and encipher progress
 %value: store the average pixel in every block of the original image
 %MSB: the number of every bit in adjustment area used for adjustment
-%NUM: the number of pixels that the adjustment area contains
-function AjImage = Adjustment( origin, blocksize, value, MSB, NUM)
+%NUM: the number of pixels that the adjustment area contains (type==1)
+%     the width of the embedding area at the edge of the image (type==0)
+%type: illustrate the distribution of the adjustment areas. 
+%      1 means the embedding areas are in every block
+%      0 means unblocking and the whole embedding area is at the edge of the image
+function AjImage = Adjustment( origin, blocksize, value, MSB, NUM, type)
 
 AjImage = origin;
 [M,N,C] = size(AjImage);
@@ -17,7 +21,7 @@ for chanal = 1 : 1 : C
             x = (i-1)*blocksize+1;
             y = (j-1)*blocksize+1;
             sub(:,:) = origin(x:x+blocksize-1, y:y+blocksize-1, chanal);
-            sub = Adjust(sub, blocksize, MSB, NUM, value(i,j,chanal));
+            sub = Adjust(sub, blocksize, MSB, NUM, value(i,j,chanal), type);
             AjImage(x:x+blocksize-1, y:y+blocksize-1, chanal) = sub(:, :);
         end
     end
