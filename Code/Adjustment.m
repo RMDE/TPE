@@ -21,7 +21,7 @@ if type == 1
                 x = (i-1)*blocksize+1;
                 y = (j-1)*blocksize+1;
                 sub(:,:) = compare(x:x+blocksize-1, y:y+blocksize-1, chanal);
-                value = means2(sub);
+                value = mean2(sub);
                 sub(:,:) = origin(x:x+blocksize-1, y:y+blocksize-1, chanal);
                 sub = Adjust(sub, blocksize, MSB, NUM, value, type);
                 AjImage(x:x+blocksize-1, y:y+blocksize-1, chanal) = sub(:, :);
@@ -39,7 +39,7 @@ if type == 0
                 x = (i-1)*blocksize+1+NUM;
                 y = (j-1)*blocksize+1+NUM;
                 sub(:,:) = compare(x:x+blocksize-1, y:y+blocksize-1, chanal);
-                value = means2(sub);
+                value = mean2(sub);
                 sub(:,:) = origin(x:x+blocksize-1, y:y+blocksize-1, chanal);
                 sub = Adjust(sub, blocksize, MSB, NUM, value, type);
                 AjImage(x:x+blocksize-1, y:y+blocksize-1, chanal) = sub(:, :);
