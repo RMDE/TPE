@@ -23,6 +23,11 @@
 
 2. Encryption
    - here we use the stream encipher
+   
 3. Adjustment 
    - goal: to keep the sum of pixels in the encrypted block as approximate as the original one  
+   
+4. Permutation
 
+   - goal: to rearrange the pixels in the same block in order to make the result of the adjustment area randomly locate in the same block for achieving the PRP security
+   - here we also use a permutation key for perfectly restoration
