@@ -20,6 +20,10 @@
    - the second distribution of the image
 
      ![distribution2](distribution2.png)
+     
+   - the third distribution of the image
+
+     ![distribution2](distribution3.png)
 
 2. Encryption
    - here we use the stream encipher

@@ -5,9 +5,7 @@
 %MSB: the number of every bit in adjustment area used for adjustment
 %NUM: the number of pixels that the adjustment area contains (type==1)
 %     no meaning (type==0)
-%type: illustrate the distribution of the adjustment areas. 
-%      1 means the embedding areas are in every block
-%      0 means unblocking and the whole block can be adjusted
+%type: the type of data hiding method that is chosed 0~3
 %edge: in order to distinguish between the two distribution of areas, 0 for type 1 and others for type 0
 
 function res = RoomReserving( origin, blocksize, MSB, NUM, type, edge )
