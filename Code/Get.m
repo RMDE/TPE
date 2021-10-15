@@ -9,6 +9,5 @@ if n < 8
     b(8-n+1:8) = t(1:n);
 end
 [~,len] = size(bits);
-b = b(1:MSB);
-bits(len+1:len+MSB) = b(1:MSB)-'0'; 
+bits(len+1:len+MSB) = b(1:MSB); 
 end

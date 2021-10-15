@@ -1,6 +1,6 @@
-%file: Selection.m
-%function: select all the data in the adjustment area that may change in the adjusting process
-%origin: the original image
+%file: Distribution.m
+%function: distributing all embedded data into corresponding MSB bits of pixels in the adjustment area
+%origin: the image after extraction
 %blocksize: no meaning for type 0 and the width of every block in the image for type 1
 %MSB: the number of every bit in adjustment area used for adjustment
 %NUM: the number of pixels that the adjustment area contains (type==1)
@@ -9,9 +9,11 @@
 %      1 means the embedding areas are in every block
 %      0 means unblocking and the whole block can be adjusted
 %edge: in order to distinguish between the two distribution of areas, 0 for type 1 and others for type 0
+%data: the auxiliary information for recovering the original pixels in the adjustment area
 
-function data = Selection( origin, blocksize, MSB, NUM, type, edge )
-    data = [];
+function res = Distribution( origin, blocksize, MSB, NUM, type, edge, data )
+    res = origin;
+    index = 1; % the index of data
     if type == 3
         return
     end
@@ -21,13 +23,13 @@ function data = Selection( origin, blocksize, MSB, NUM, type, edge )
         for chanal = 1 : 1 : C
             for i = edge+1 : 1 : M-edge
                 for j = edge+1 : 1 : N-edge
-                    data = Get(data, origin(i,j,chanal), MSB);
+                    res(i,j,chanal) = Put(origin(i,j,chanal),data,index,MSB);
+                    index = index + MSB;
                 end
             end
         end
     end
     if type == 1
-       data = [];
        m = M/blocksize;
        n = N/blocksize;
        for chanal = 1 : 1 : C
@@ -42,7 +44,8 @@ function data = Selection( origin, blocksize, MSB, NUM, type, edge )
                         if count >= NUM
                             break;
                         end
-                        data = Get(data,origin(x,y,chanal),MSB);
+                        res(x,y,chanal) = Put(origin(x,y,chanal),data,index,MSB);
+                        index = index + MSB;
                         count = count + 1;
                     end
                  end
