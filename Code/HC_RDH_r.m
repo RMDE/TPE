@@ -2,22 +2,26 @@
 %function: extracting the embedded data and recover the embedding area
 %origin: the image after decryption process
 %locatex & locatey: the location of first pixel in embedding block
-function [data,res] = HC_RDH_r(origin, locatex, locatey)
+% locate_map: record whether the cooresponding block has embedded extra data
+function [data,res] = HC_RDH_r(origin, locatex, locatey, locate_map)
     res = origin;
     [~,~,C] = size(origin);
     [~,len] = size(locatex);
     data = [];
     count = 1; % index of the embedded data
     for chanal = 1 : 1 : C
+        locate_map(chanal,:) = Decompression(locate_map(chanal,:));
         for index = 1 : 1 : len
+            % judge wheather the block has embedded the extra data
+            % 1 means the block has no extra data embedded
+            if locate_map(chanal,index) == 1
+                continue;
+            end
             pred = Dec2bin(origin(locatex(index),locatey(index),chanal),8);
             bits(1:8) = Dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
             bits(9:16) = Dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
             bits(17:24) = Dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
             md = bin2dec(bits(1:3));
-            if md == 0
-                continue;
-            end
             e1 = bits(4:3+(8-md));
             e2 = bits(4+(8-md):3+2*(8-md));
             e3 = bits(4+2*(8-md):3+3*(8-md));

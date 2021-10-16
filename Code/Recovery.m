@@ -17,7 +17,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
     [M,N,C] = size(origin);
     % High Capacity Reversible Data Hiding in Encrypted Image Based on Adaptive MSB Prediction
     if method == 0 
-       %selecting the location of the first pixel in each block of embedding area 
+       % selecting the location of the first pixel in each block of embedding area 
        if type == 0
            length = C*(2*edge*N+2*edge*(M-2*edge))/4;
            locatex = zeros(1,length);
@@ -49,6 +49,9 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
                    end
                end
            end
+           % data hiding using the method 1
+           [data,ExtImage] = HC_RDH_r(origin, locatex, locatey); 
+           data = Decompression(data);
        end
        if type == 1
            m = M/blocksize;
@@ -69,9 +72,42 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
                    end
                end
            end
+           % get the locate_map
+           locate_map = zeros(C,length);
+           no = 1; % index of the locate_map
+           for chanal = 1 : 1 : C
+               for i = 1 : 1 : m
+                   for j = 1 : 1 : n
+                       for p = (j-1)*blocksize+mod(NUM,blocksize)+1 : 1 : j*blocksize
+                           locate_map(chanal,no:no+7) = Get([],origin((i-1)*blocksize+h,p,chanal),8) - '0';
+                       end
+                   end
+               end
+           end
+           [~,len] = size(locate_map);
+           for i = len : -1 : 1
+               if locate_map(chanal,i) == 1
+                   locate_map(chanal,i:len) = 0;
+                   break;
+               end
+           end
+           % data hiding using the method 1
+           [data,ExtImage] = HC_RDH_r(origin, locatex, locatey, locate_map);
+           data = Decompression(data);
+           % recover the space that stored the locate_map before
+           no = NUM*MSB+1;
+           for chanal = 1 : 1 : C
+               for i = 1 : 1 : m
+                   for j = 1 : 1 : n
+                       for p = (j-1)*blocksize+mod(NUM,blocksize)+1 : 1 : j*blocksize
+                           ExtImage(h,j,chanal) = bin2dec(data(no:no+7));
+                           no = no + 8;
+                       end
+                   end
+               end
+           end
        end
-       %data hiding using the method 1
-       [data,ExtImage] = HC_RDH_r(origin, locatex, locatey);
+
     end
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );
 end
