@@ -53,7 +53,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
        end
        if type == 1
-           data = Encode(data); % change the order of the MSBs
+           data = Encode(data,MSB); % change the order of the MSBs
            m = M/blocksize;
            n = N/blocksize;
            count = 1;
