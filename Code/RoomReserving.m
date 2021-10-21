@@ -49,10 +49,11 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
-           data = Compression(data);
+           data = Compression(data,1);
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
        end
        if type == 1
+           data = Encode(data); % change the order of the MSBs
            m = M/blocksize;
            n = N/blocksize;
            count = 1;
@@ -80,12 +81,12 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
-           data = Compression(data);
+           data = Compression(NUM*MSB*m*n*C,data,1);
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
            [~,len] = size(locate_map);
-           no = 1; % index of the locate_map
            % store each chanal's locate_map into Er in every big block
            for chanal = 1 : 1 : C
+               no = 1; % index of the locate_map
                for i = 1 : 1 : m
                    for j = 1 : 1 : n
                        for p = (j-1)*blocksize+mod(NUM,blocksize)+1 : 1 : j*blocksize

@@ -13,7 +13,7 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
     [~,limit] = size(data);
     data(limit+1) = '1'; % adding the ending flag
     limit = limit + 1;
-    count = 1; %record the index of the data to be embedded
+    count = uint32(1); %record the index of the data to be embedded
     for chanal = 1 : 1 : C
         for index = 1 : 1 : number
             % the first pixel value of each block for prediction
@@ -21,7 +21,7 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
             d1 = Diff(pred,origin(locatex(index),locatey(index)+1,chanal));
             d2 = Diff(pred,origin(locatex(index)+1,locatey(index),chanal));
             d3 = Diff(pred,origin(locatex(index)+1,locatey(index)+1,chanal));
-            d = uint8(d1);
+            d = d1;
             if d2 > d
                 d = d2;
             end
@@ -50,24 +50,25 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
                    bits(4+3*d:24) = tmp(1:21-3*d);
                 else
                     if count+20-3*d > limit && limit > count
-                        data(limit:count+20-3*d) = tmp(1:count+21-3*d-limit);
-                        limit = limit + count+21-3*d-limit+1;
+                        data(limit+1:count+20-3*d) = tmp(1:count+20-3*d-limit);
+                        limit = count+20-3*d;
                     end
                     bits(4+3*d:24) = data(count:count+20-3*d);
                 end
-            count = count + 20-3*d + 1;
+                count = count + 20-3*d + 1;
             end
             res(locatex(index),locatey(index)+1,chanal) = bin2dec(bits(1:8));
             res(locatex(index)+1,locatey(index),chanal) = bin2dec(bits(9:16));
             res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(bits(17:24));
         end
         % compress the locate_map of each chanal respectively
-        locate_map(chanal,:) = Compression(locate_map(chanal,:));
-        [~,len] = size(locate_map(chanal,:));
+        map = Compression(number,locate_map(chanal,1:number),0);
+        [~,len] = size(map);
+        locate_map(chanal,1:len) = map(1:len);
         locate_map(chanal,len+1) = 1;
         len = len + 1;
         if mod(len,8) ~= 0
-            locate_map(chanal,len+1:ceil(len/8)*8) = temp(1:ceil(len/8)*8-len);
+            locate_map(chanal,len+1:ceil(len/8)*8) = tmp(1:ceil(len/8)*8-len)-'0';
         end
     end       
 end

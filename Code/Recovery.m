@@ -51,63 +51,55 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            end
            % data hiding using the method 1
            [data,ExtImage] = HC_RDH_r(origin, locatex, locatey); 
-           data = Decompression(data);
+           data = Decompression(,data,1);
        end
        if type == 1
            m = M/blocksize;
            n = N/blocksize;
-           length =  (blocksize*blocksize-NUM)*m*n/4;
+           h = ceil(NUM/blocksize); % the height of the adjustment area
+           length = (blocksize-h)*blocksize*m*n/4;
            locatex = zeros(1,length);
            locatey = zeros(1,length);
            count = 1;
-           h = round(NUM/blocksize) + 1; % the height of the adjustment area
-           for chanal = 1 : 1 : C
-               for i = 1 : 1 : m
-                   for l = h+1 : 1 :blocksize
-                       for j = 1 : 2 : N
-                           locatex(count) = h+(i-1)*blocksize;
-                           locatey(count) = j;
-                           count = count + 1;
-                       end
+           for i = 1 : 1 : m
+               for l = h+1 : 2 :blocksize
+                   for j = 1 : 2 : N
+                       locatex(count) = l+(i-1)*blocksize;
+                       locatey(count) = j;
+                       count = count + 1;
                    end
                end
            end
            % get the locate_map
-           locate_map = zeros(C,length);
-           no = 1; % index of the locate_map
+           locate_map = zeros(C,(blocksize-mod(NUM,blocksize))*8);
            for chanal = 1 : 1 : C
+               no = 1; % index of the locate_map
                for i = 1 : 1 : m
                    for j = 1 : 1 : n
                        for p = (j-1)*blocksize+mod(NUM,blocksize)+1 : 1 : j*blocksize
                            locate_map(chanal,no:no+7) = Get([],origin((i-1)*blocksize+h,p,chanal),8) - '0';
+                           no = no + 8;
                        end
                    end
                end
            end
-           [~,len] = size(locate_map);
-           for i = len : -1 : 1
-               if locate_map(chanal,i) == 1
-                   locate_map(chanal,i:len) = 0;
-                   break;
-               end
-           end
            % data hiding using the method 1
            [data,ExtImage] = HC_RDH_r(origin, locatex, locatey, locate_map);
-           data = Decompression(data);
+           data = Decompression((NUM*MSB+(blocksize-mod(NUM,blocksize))*8)*m*n*C,data,1);
            % recover the space that stored the locate_map before
-           no = NUM*MSB+1;
+           no = NUM*MSB*m*n*C+1;
            for chanal = 1 : 1 : C
                for i = 1 : 1 : m
                    for j = 1 : 1 : n
                        for p = (j-1)*blocksize+mod(NUM,blocksize)+1 : 1 : j*blocksize
-                           ExtImage(h,j,chanal) = bin2dec(data(no:no+7));
+                           ExtImage((i-1)*blocksize+h,p,chanal) = bin2dec(num2str(data(no:no+7)-'0'));
                            no = no + 8;
                        end
                    end
                end
            end
        end
-
+       data = Decode(data(1:NUM*MSB*m*n*C),MSB);
     end
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );
 end
