@@ -11,15 +11,15 @@ function PmImage = Permutation(origin, blocksize, key, edge, kind)
     rng(key);
     PmImage = origin;
     [M,N,C] = size(origin); 
-    m = round((M - edge*2)/blocksize);
-    n = round((N - edge*2)/blocksize);
+    m = floor((M - edge*2)/blocksize);
+    n = floor((N - edge*2)/blocksize);
     keys = uint8(randi(LIMIT,m,n));
     for chanal = 1 : 1 : C
         for i = 1 : m
             for j = 1 : n
                 x = (i-1)*blocksize+1+edge;
                 y = (j-1)*blocksize+1+edge;
-                sub(:,:) = origin(x:x+blocksize-1, y:y+blocksize-1, chanal);
+                sub = origin(x:x+blocksize-1, y:y+blocksize-1, chanal);
                 sub = Permutate(sub, blocksize, keys(i,j), kind);
                 PmImage(x:x+blocksize-1, y:y+blocksize-1, chanal) = sub(:, :);
             end
