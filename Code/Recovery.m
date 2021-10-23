@@ -58,7 +58,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            n = N/blocksize;
            h = ceil(NUM/blocksize); % the height of the adjustment area
            length = (blocksize-h)*blocksize*m*n/4;
-           locatex = zeros(1,length);
+           locatex = zeros(1,length); % store location of the the first pixel in the bock of the embedding area
            locatey = zeros(1,length);
            count = 1;
            for i = 1 : 1 : m
@@ -85,7 +85,14 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            end
            % data hiding using the method 1
            [data,ExtImage] = HC_RDH_r(origin, locatex, locatey, locate_map);
-           data = Decompression((NUM*MSB+(blocksize-mod(NUM,blocksize))*8)*m*n*C,data,1);
+           [~,l] = size(data);
+           for i = l : -1 : 1
+               if data(i) == 1
+                   data = data(1:i-1);
+                   break;
+               end
+           end
+           data = Decompression(NUM*MSB*m*n*C,data,1);
            % recover the space that stored the locate_map before
            no = NUM*MSB*m*n*C+1;
            for chanal = 1 : 1 : C
@@ -101,5 +108,6 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
        end
        data = Decode(data(1:NUM*MSB*m*n*C),MSB);
     end
+    % recover the adjustment area
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );
 end

@@ -11,8 +11,6 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
     [~,~,C] = size(origin);
     locate_map = zeros(C,number);
     [~,limit] = size(data);
-    data(limit+1) = '1'; % adding the ending flag
-    limit = limit + 1;
     count = uint32(1); %record the index of the data to be embedded
     for chanal = 1 : 1 : C
         for index = 1 : 1 : number
@@ -70,5 +68,8 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
         if mod(len,8) ~= 0
             locate_map(chanal,len+1:ceil(len/8)*8) = tmp(1:ceil(len/8)*8-len)-'0';
         end
-    end       
+        [~,l] = size(locate_map);
+        locate_map(chanal,ceil(len/8)*8+1:l) = 0;
+    end
+    count
 end

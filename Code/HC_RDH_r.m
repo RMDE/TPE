@@ -13,11 +13,12 @@ function [data,res] = HC_RDH_r(origin, locatex, locatey, locate_map)
         [~,l] = size(locate_map);
         for i = l : -1 : 1
             if locate_map(chanal,i) == 1
-                locate_map(chanal,i:l) = 0;
+                locate_map(chanal,i) = 0;
+                flag = i-1;
                 break;
             end
         end
-        locate_map(chanal,:) = Decompression(len,locate_map(chanal,:),0);        
+        locate_map(chanal,1:len) = Decompression(len,locate_map(chanal,1:flag),0);        
         for index = 1 : 1 : len
             % judge wheather the block has embedded the extra data
             % 1 means the block has no extra data embedded

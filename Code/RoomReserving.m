@@ -81,7 +81,11 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
+           size(data)
            data = Compression(NUM*MSB*m*n*C,data,1);
+           [~,limit] = size(data);
+           data(limit+1) = '1'; % adding the ending flag
+           size(data)
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
            [~,len] = size(locate_map);
            % store each chanal's locate_map into Er in every big block
