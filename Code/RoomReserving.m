@@ -25,24 +25,24 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
            locatey = zeros(1,length);
            count = 0;
            for j = 1 : 2 : N
-               for i = 1 : 1 : edge
+               for i = 1 : 2 : edge
                    locatex(count) = i;
                    locatey(count) = j;
                    count = count + 1;
                end
-               for i = M-edge+1 : 1 : M
+               for i = M-edge+1 : 2 : M
                    locatex(count) = i;
                    locatey(count) = j;
                    count = count + 1;
                end
            end
-           for i = edge+1 : 1 : M-edge
-               for j = 1 : 1 : edge
+           for i = edge+1 : 2 : M-edge
+               for j = 1 : 2 : edge
                    locatex(count) = i;
                    locatey(count) = j;
                    count = count + 1;
                end
-               for j = N-edge+1 : 1 : N
+               for j = N-edge+1 : 2 : N
                    locatex(count) = i;
                    locatey(count) = j;
                    count =count + 1;
@@ -104,7 +104,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                    end
                end
            end
-           
+    
        end 
        
     end
