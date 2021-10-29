@@ -50,7 +50,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
            end
            %data hiding using the method 1
            data = Compression(data,1);
-           [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
+           res = HC_RDH(origin, data, locatex, locatey);
        end
        if type == 1
            data = Encode(data,MSB); % change the order of the MSBs
@@ -104,7 +104,6 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                    end
                end
            end
-    
        end 
        
     end

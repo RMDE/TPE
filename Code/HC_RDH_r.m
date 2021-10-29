@@ -1,4 +1,4 @@
-%file: HC_RDH.m
+%file: HC_RDH_r.m
 %function: extracting the embedded data and recover the embedding area
 %origin: the image after decryption process
 %locatex & locatey: the location of first pixel in embedding block
