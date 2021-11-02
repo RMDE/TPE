@@ -20,10 +20,11 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
     if method == 0 
        %selecting the location of the first pixel in each block of embedding area 
        if type == 0
-           length = C*(2*edge*N+2*edge*(M-2*edge))/4;
+           data = Encode(data,MSB); % change the order of the MSBs
+           length = (2*edge*N+2*edge*(M-2*edge))/4;
            locatex = zeros(1,length);
            locatey = zeros(1,length);
-           count = 0;
+           count = 1;
            for j = 1 : 2 : N
                for i = 1 : 2 : edge
                    locatex(count) = i;
@@ -49,8 +50,8 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
-           data = Compression(data,1);
-           res = HC_RDH(origin, data, locatex, locatey);
+           data = Compression((M-edge*2)*(N-edge*2)*MSB*C,data,1);
+           res = HC_RDH_V(origin, data, locatex, locatey);
        end
        if type == 1
            data = Encode(data,MSB); % change the order of the MSBs

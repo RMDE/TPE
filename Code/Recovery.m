@@ -19,39 +19,38 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
     if method == 0 
        % selecting the location of the first pixel in each block of embedding area 
        if type == 0
-           length = C*(2*edge*N+2*edge*(M-2*edge))/4;
+           length = (2*edge*N+2*edge*(M-2*edge))/4;
            locatex = zeros(1,length);
            locatey = zeros(1,length);
-           count = 0;
-           for chanal = 1 : 1 : C
-               for j = 1 : 2 : N
-                   for i = 1 : 1 : edge
-                       locatex(count) = i;
-                       locatey(count) = j;
-                       count = count + 1;
-                   end
-                   for i = M-edge+1 : 1 : M
-                       locatex(count) = i;
-                       locatey(count) = j;
-                       count = count + 1;
-                   end
+           count = 1;
+           for j = 1 : 2 : N
+               for i = 1 : 2 : edge
+                   locatex(count) = i;
+                   locatey(count) = j;
+                   count = count + 1;
                end
-               for i = edge+1 : 1 : M-edge
-                   for j = 1 : 1 : edge
-                       locatex(count) = i;
-                       locatey(count) = j;
-                       count = count + 1;
-                   end
-                   for j = N-edge+1 : 1 : N
-                       locatex(count) = i;
-                       locatey(count) = j;
-                       count =count + 1;
-                   end
+               for i = M-edge+1 : 2 : M
+                   locatex(count) = i;
+                   locatey(count) = j;
+                   count = count + 1;
+               end
+           end
+           for i = edge+1 : 2 : M-edge
+               for j = 1 : 2 : edge
+                   locatex(count) = i;
+                   locatey(count) = j;
+                   count = count + 1;
+               end
+               for j = N-edge+1 : 2 : N
+                   locatex(count) = i;
+                   locatey(count) = j;
+                   count =count + 1;
                end
            end
            % data hiding using the method 1
-           [data,ExtImage] = HC_RDH_r(origin, locatex, locatey); 
-           data = Decompression(s,data,1);
+           [data,ExtImage] = HC_RDH_Vr(origin, locatex, locatey); 
+           data = Decompression((M-edge*2)*(N-edge*2)*MSB*C,data,1);
+           data = Decode(data,MSB);
        end
        if type == 1
            m = M/blocksize;
@@ -105,8 +104,9 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
                    end
                end
            end
+           data = Decode(data(1:NUM*MSB*m*n*C),MSB);
        end
-       data = Decode(data(1:NUM*MSB*m*n*C),MSB);
+
     end
     % recover the adjustment area
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );
