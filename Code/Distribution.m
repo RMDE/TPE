@@ -6,6 +6,7 @@
 %NUM: the number of pixels that the adjustment area contains (type==1)
 %     no meaning (type==0)
 %type: illustrate the distribution of the adjustment areas. 
+%      2 means others
 %      1 means the embedding areas are in every block
 %      0 means unblocking and the whole block can be adjusted
 %edge: in order to distinguish between the two distribution of areas, 0 for type 1 and others for type 0
@@ -14,7 +15,7 @@
 function res = Distribution( origin, blocksize, MSB, NUM, type, edge, data )
     res = origin;
     index = 1; % the index of data
-    if type == 3
+    if type == 2
         return
     end
     [M,N,C] = size(origin);

@@ -4,7 +4,7 @@
 %blocksize: the blocksize of embedding area for type 0, and the blocksize of adjustment area for type 1
 %MSB: the number of every bit in adjustment area used for adjustment
 %NUM: the number of pixels that the adjustment area contains (type==1)
-%     no meaning (type==0)
+%     no meaning (type==0 or type==2)
 %method: using different data hiding method to reserve room 0-3
 %type: illustrate the distribution of the adjustment areas. 
 %      2 means others
@@ -106,7 +106,10 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
        end 
-       
+    end
+    
+    if method == 1
+        res = BC_RDH( origin, blocksize, L );
     end
         
 end

@@ -106,7 +106,9 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            end
            data = Decode(data(1:NUM*MSB*m*n*C),MSB);
        end
-
+    elseif method == 1
+        ExtImage = BC_RDH_r( origin, blocksize, L );
+        data = [];
     end
     % recover the adjustment area
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );

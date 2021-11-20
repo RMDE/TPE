@@ -12,7 +12,7 @@
 
 function data = Selection( origin, blocksize, MSB, NUM, type, edge )
     data = [];
-    if type == 3
+    if type == 2
         return
     end
     [M,N,C] = size(origin);
