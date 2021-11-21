@@ -53,20 +53,20 @@ function res = BC_RDH( origin, blocksize, L )
         % middle prediction
         for i = 2 : 1 : M
             for j = 2 : 1 : N
-                min = origin(i-1,j);
-                max = origin(i,j-1);
-                if min > origin(i,j-1)
-                    min = origin(i,j-1);
-                    max = origin(i-1,j);
+                min = origin(i-1,j,chanal);
+                max = origin(i,j-1,chanal);
+                if min > origin(i,j-1,chanal)
+                    min = origin(i,j-1,chanal);
+                    max = origin(i-1,j,chanal);
                 end
-                if origin(i-1,j-1) < min
+                if origin(i-1,j-1,chanal) < min
                     pred = max;
-                elseif origin(i-1,j-1) > max
+                elseif origin(i-1,j-1,chanal) > max
                     pred = min;
                 else
-                    pred = double(origin(i-1,j)) + double(origin(i,j-1)) - double(origin(i-1,j-1));
+                    pred = double(origin(i-1,j,chanal)) + double(origin(i,j-1,chanal)) - double(origin(i-1,j-1,chanal));
                 end
-                temp = double(origin(i,j)) - double(pred);
+                temp = double(origin(i,j,chanal)) - double(pred);
                 if temp < -127 || temp > 127
                     error(i,j) = origin(i,j,chanal);
                     locate_map((i-1)*blocksize+j) = 1;
@@ -138,7 +138,9 @@ function res = BC_RDH( origin, blocksize, L )
             end
             if no-1 >= M*N
                 comp(ci) = 0;
-                comp(ci+1:ci+M*N) = streams(:);
+                for line = 1 : 1 : M
+                    comp(ci+(line-1)*N+1:ci+line*N) = planes(line,:,i);
+                end
                 ci = ci + M*N + 1;
             else
                 comp(ci) = 1;
@@ -148,9 +150,9 @@ function res = BC_RDH( origin, blocksize, L )
             end
         end
         % embed the total length of the compressed bit-planes into the end of the planes 
-        comp(M*N*7-23:M*N*7) = Dec2bin(ci-1,24);
+        comp(M*N*7-23:M*N*7) = Dec2bin(ci-1,24)-'0';
         streams = zeros(M*N,8);
-        for i = 1 : 1 : 8
+        for i = 1 : 1 : 7
             streams(:,i) = comp((i-1)*M*N+1:i*M*N);
         end
         res(:,:,chanal) = Merge(streams,M,N); % merge eight bit-plane bitstreams into one plane of the channal 

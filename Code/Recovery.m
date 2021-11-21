@@ -3,6 +3,7 @@
 %origin: the original image
 %blocksize: the blocksize of embedding area for type 0, and the blocksize of adjustment area for type 1
 %MSB: the number of every bit in adjustment area used for adjustment
+%     (method==1: the value of Lfix)
 %NUM: the number of pixels that the adjustment area contains (type==1)
 %     no meaning (type==0)
 %method: using different data hiding method to reserve room 0-3
@@ -107,7 +108,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            data = Decode(data(1:NUM*MSB*m*n*C),MSB);
        end
     elseif method == 1
-        ExtImage = BC_RDH_r( origin, blocksize, L );
+        ExtImage = BC_RDH_r( origin, blocksize, MSB );
         data = [];
     end
     % recover the adjustment area
