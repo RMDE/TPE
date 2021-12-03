@@ -9,61 +9,123 @@
 %      1 means the embedding areas are in every block
 %      0 means unblocking and the whole block can be adjusted
 %edge: in order to distinguish between the two distribution of areas, 0 for type 1 and others for type 0
-%data: the data to be embeded
 
-function res = BTL_RDH_r( origin, blocksize, type, NUM, edge, data)
+function [data,res] = BTL_RDH_r( origin, blocksize, type, NUM, edge)
     res = origin;
     alpha = 3;
     beta = 2;
     if alpha <= beta
+        range = 2^alpha-1;
         labels = dec2bin(1:2^alpha-1);
     else
+        range = (2^beta-1)*2^(alpha-beta);
         labels = dec2bin(2^(alpha-beta):2^alpha-1);
     end 
     [M,N,C] = size(origin);
     for channel = 1 : 1 : C
-        locatex = [];
+        locatex = []; % record the location of pixels in embedding area 
         locatey = [];
-        bits = [];
+        bits = []; %  store the high beta bits of pixels belong to Pn for recovery
         if type == 0
-            % the special condition (the pixels are locating at the boundary)
-            for i = 2 : 1 : M
-                [locatex,locatey,bits,res(i,1,channel)] = Prediction(origin(:,:,channel),i,1,0,beta,labels,locatex,locatey,bits);
+            length = (M-edge*2) * (N-edge*2) * MSB; % the length of the uncompressed information for recovering the adjustment area
+            % select the locations of the pixels in adjustment area by recovery order
+            locatex(1:M-1) = 2:M;
+            locatey(1:M-1) = 1;
+            locatex(M:M+N-2) = 1;
+            locatey(M:M+N-2) = 2:N;
+            no = M+N-1; % index of the locates
+            for j = 2 : edge
+                locatex(no:no+M-2) = 2:M;
+                locatey(no:no+M-2) = j;
+                no = no + M - 1;
             end
-            for j = 2 : 1 : N
-                [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),1,j,2,beta,labels,locatex,locatey,bits);
+            for j = edge+1 : N-edge+1
+                locatex(no:no+edge-2) = 2:edge;
+                locatey(no:no+edge-2) = j;
+                no = no + edge - 1;
             end
-            % the common condition
-            for j = 1 : 2 : N
-                for i = 2 : 1 : edge
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+            locatex(no:no+N-2*edge-1) = M-edge+1;
+            locatey(no:no+N-2*edge-1) = edge+1 : N-edge;
+            no = no + N-2*edge;
+            locatex(no:no+M-2*edge) = edge+1 : M-edge+1;
+            locatey(no:no+M-2*edge) = N-edge+1;
+            no = no + M-edge*2 + 1;
+            for j = edge+1 : N-edge+1
+                locatex(no:no+edge-2) = M-edge+2 : M;
+                locatey(no:no+edge-2) = j;
+                no = no + edge - 1;
+            end
+            for j = N-edge+2 : N
+                locatex(no:no+M-2) = 2 : M;
+                locatey(no:no+M-2) = j;
+                no = no + M - 1;
+            end
+            for index = 1 : 1 : no-1
+                bin = Dec2bin(origin(locatex(index),locatey(index),channel),8);
+                if bin(1:beta) ~= '0'
+                    [~,l] = size(bits);
+                    bits(l+1,l+8-alpha) = bin(alpha+1:8);
                 end
-                for i = M-edge+1 : 1 : M
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+            end
+            [~,l] = size(bits);
+            for i = l : -1 : 1
+                if bits(i) == '1'
+                    bits = bits(1:i-1);
+                    break;
                 end
             end
-            for i = edge+1 : 2 : M-edge
-                for j = 1 : 2 : edge
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
-                end
-                for j = N-edge+1 : 2 : N
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+            bits = Decompression(length,bits,1);
+            data = Decode(bits(1:length),MSB);
+            % recovering high beta bits of pixels with beta labels
+            no = length+1; % index of the bits
+            for i = 2 : M
+                [no,res(i,1,channel)] = Reduction(origin, i, 1, 0, beta, labels, bits, no);
+            end
+            for j = 2 : N
+                [no,res(1,j,channel)] = Reduction(origin, 1, j, 2, beta, labels, bits, no);
+            end
+            for i = 2 : M
+                for j = 2 : edge
+                    [no,res(i,j,channel)] = Reduction(origin, i, j, 4, beta, labels, bits, no);
                 end
             end
-            % the special condition
-            for i = edge+1 : 1 : M-edge
-                [locatex,locatey,bits,res(i,1,channel)] = Prediction(origin(:,:,channel),i,1,0,beta,labels,locatex,locatey,bits);
+            for i = 2 : edge
+                for j = edge+1 : N-edge+1
+                    [no,res(i,j,channel)] = Reduction(origin, i, j, 4, beta, labels, bits, no);
+                end
             end
-            for j = edge+1 : 1 : N-edge
-                [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),1,j,2,beta,labels,locatex,locatey,bits);
+            for j = edge+1 : N-edge
+                [no,res(M-edge+1,j,channel)] = Reduction(origin, M-edge+1, j, 2, beta, labels, bits, no);
+            end
+            for i = edge+1 : M-edge+1
+                [no,res(i,N-edge+1,channel)] = Reduction(origin, i, N-edge+1, 0, beta, labels, bits, no);
+            end
+            for i = M-edge+2 : M
+                for j = edge+1 : N-edge+1
+                    [no,res(i,j,channel)] = Reduction(origin, i, j, 4, beta, labels, bits, no);
+                end
+            end
+            for i = 2 : M
+                for j = N-edge+2 : N
+                    [no,res(i,j,channel)] = Reduction(origin, i, j, 4, beta, labels, bits, no);
+                end
             end
         elseif type == 1
+            length = NUM * MSB * M/blocksize * N/blocksize;
             % the special condition (the pixels are locating at the boundary)
             for i = M-1 : -1 : ceil(NUM/blocksize)
-                [locatex,locatey,bits,res(i,N,channel)] = Prediction(origin(:,:,channel),i,N,3,beta,labels,locatex,locatey,bits);
+                bin = Dec2bin(origin(i,N,channel),8);
+                if bin(1:beta) ~= '0'
+                    [~,l] = size(bits);
+                    bits(l+1,l+8-alpha) = bin(alpha+1:8);
+                end
             end
             for j = N-1 : -1 : 1
-                [locatex,locatey,bits,res(M,j,channel)] = Prediction(origin(:,:,channel),M,j,1,beta,labels,locatex,locatey,bits);
+                bin = Dec2bin(origin(1,M,channel),8);
+                if bin(1:beta) ~= '0'
+                    [~,l] = size(bits);
+                    bits(l+1,l+8-alpha) = bin(alpha+1:8);
+                end
             end
             % the common condition
             count = N+M-ceil(NUM/blocksize);
@@ -75,28 +137,97 @@ function res = BTL_RDH_r( origin, blocksize, type, NUM, edge, data)
                     if count > NUM
                         break;
                     end
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,5,beta,labels,locatex,locatey,bits);
+                    bin = Dec2bin(origin(1,j,channel),8);
+                    if bin(1:beta) ~= '0'
+                        [~,l] = size(bits);
+                        bits(l+1,l+8-alpha) = bin(alpha+1:8);
+                    end
                     count = count + 1;
                 end
-            end        
+            end
+            [~,l] = size(bits);
+            for i = l : -1 : 1
+                if bits(i) == '1'
+                    bits = bits(1:i-1);
+                    break;
+                end
+            end
+            bits = Decompression(length,bits,1);
+            data = Decode(bits(1:length),MSB);
+            % recovering high beta bits of pixels with beta labels
+            no = length+1; % index of the bits
+            for i = M-1 : -1 : ceil(NUM/blocksize)
+                [no,res(i,N,channel)] = Reduction(origin, i, N, 1, beta, labels, bits, no);
+            end
+            for j = N-1 : -1 : 1
+                [no,res(M,j,channel)] = Reduction(origin, M, j, 3, beta, labels, bits, no);
+            end
+            % the common condition
+            count = N+M-ceil(NUM/blocksize);
+            for i = M-2 : -1 : 1
+                if count > NUM
+                        break;
+                end
+                for j = N-2 : -1 : 1
+                    if count > NUM
+                        break;
+                    end
+                    [no,res(i,j,channel)] = Reduction(origin, i, j, 5, beta, labels, bits, no);
+                    count = count + 1;
+                end
+            end
         end
-        data = Encode(data,MSB);
-        [~,l] = size(data);
-        data = Compression(l,data,1);
-        [~,l1] = size(data);
-        [~,l2] = size(bits);
-        data(l1+1:l1+l2) = bits(:); % the whole information to be embedded
-        [~,len] = size(locatex);
-        capacity = len*(8-alpha); % caculate the embedding capacity
-        % padding the data into length being the same as the capacity
-        data (l1+l2+1) = '1';
-        data(l1+l2+2:capacity) = '0';
-        % embedding the information into marked pixels
-        no = 1; % index of the data
-        for index = 1 : 1 : len
-            temp = Dec2bin(res(locates(index),locatey(index)),8);
-            temp(alpha+1:8) = data(no:no+7-alpha);
-            res(locatex(index),locatey(index)) = bin2dec(temp);
+    end   
+end
+
+function [no,res] = Reduction(origin, x, y, type, beta, labels, bits, no)
+    res = origin(x,y);
+    [range,alpha] = size(labels);
+    bin = Dec2bin(origin(x,y));
+    if bin(1:beta) == '0'
+        temp(1:beta) = bits(no:no+beta-1);
+        res = bin2dec(temp);
+        no = no + beta;
+    else
+        error = double(bin2dec(bin(1:alpha))) - double(bin2dec(labels(1,:))) + double(ceil(-range/2));
+        if type == 0 % x-1 -> x
+            res = double(origin(x-1,y)) + error;
+        elseif type == 1 % x+1 -> x
+            res = double(origin(x+1,y)) + error;
+        elseif type == 2 % y-1 -> y
+            res = double(origin(x,y-1)) + error;
+        elseif type == 3 % y+1 -> y
+            res = double(origin(x,y+1)) + error;
+        elseif type == 4
+            min = origin(x-1,y);
+            max = origin(x,y-1);
+            if min > origin(x,y-1)
+                min = origin(x,y-1);
+                max = origin(x-1,y);
+            end
+            if origin(x-1,y-1) < min
+                pred = max;
+            elseif origin(x-1,y-1) > max
+                pred = min;
+            else
+                pred = double(origin(x-1,y)) + double(origin(x,y-1)) - double(origin(x-1,y-1));
+            end
+            res = double(pred) + error;  
+        elseif type == 5
+            min = origin(x+1,y);
+            max = origin(x,y+1);
+            if min > origin(x,y+1)
+                min = origin(x,y+1);
+                max = origin(x+1,y);
+            end
+            if origin(x+1,y+1) < min
+                pred = max;
+            elseif origin(x+1,y+1) > max
+                pred = min;
+            else
+                pred = double(origin(x+1,y)) + double(origin(x,y+1)) - double(origin(x+1,y+1));
+            end
+            res = double(pred) + error;
         end
     end
 end
