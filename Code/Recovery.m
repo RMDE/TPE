@@ -111,7 +111,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
         ExtImage = BC_RDH_r( origin, blocksize, MSB );
         data = [];
     elseif method == 2
-        [data,ExtImage] = BTL_RDH_r( origin, blocksize, type, NUM, edge);
+        [data,ExtImage] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge);
     end
     % recover the adjustment area
     res = Distribution( ExtImage, blocksize, MSB, NUM, type, edge, data );

@@ -11,7 +11,7 @@
 %edge: in order to distinguish between the two distribution of areas, 0 for type 1 and others for type 0
 %data: the data to be embeded
 
-function res = BTL_RDH( origin, blocksize, type, NUM, edge, data)
+function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
     res = origin;
     alpha = 3;
     beta = 2;
@@ -26,36 +26,37 @@ function res = BTL_RDH( origin, blocksize, type, NUM, edge, data)
         locatey = [];
         bits = [];
         if type == 0
-            % the special condition (the pixels are locating at the boundary)
-            for i = 2 : 1 : M
+            for i = 2 : M
                 [locatex,locatey,bits,res(i,1,channel)] = Prediction(origin(:,:,channel),i,1,0,beta,labels,locatex,locatey,bits);
             end
-            for j = 2 : 1 : N
+            for j = 2 : N
                 [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),1,j,2,beta,labels,locatex,locatey,bits);
             end
-            % the common condition
-            for j =  edge+1: 1 : N
-                for i = 2 : 1 : edge
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
-                end
-                for i = M-edge+2 : 1 : M
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+            for i = 2 : M
+                for j = 2 : edge
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
-            for i = 2 : 1 : M
-                for j = 2 : 1 : edge
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
-                end
-                for j = N-edge+2 : 1 : N
-                    [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+            for i = 2 : edge
+                for j = edge+1 : N-edge+1
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
-            % the special condition
-            for i = edge+1 : 1 : M-edge+1
-                [locatex,locatey,bits,res(i,N-edge+1,channel)] = Prediction(origin(:,:,channel),i,1,0,beta,labels,locatex,locatey,bits);
+            for j = edge+1 : N-edge
+                [locatex,locatey,bits,res(M-edge+1,j,channel)] = Prediction(origin(:,:,channel),M-edge+1,j,2,beta,labels,locatex,locatey,bits);
             end
-            for j = edge+1 : 1 : N-edge
-                [locatex,locatey,bits,res(M-edge+1,j,channel)] = Prediction(origin(:,:,channel),1,j,2,beta,labels,locatex,locatey,bits);
+            for i = edge+1 : M-edge+1
+                [locatex,locatey,bits,res(i,N-edge+1,channel)] = Prediction(origin(:,:,channel),i,N-edge+1,0,beta,labels,locatex,locatey,bits);
+            end
+            for i = M-edge+2 : M
+                for j = edge+1 : N-edge+1
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+                end
+            end
+            for i = 2 : M
+                for j = N-edge+2 : N
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
+                end
             end
         elseif type == 1
             % the special condition (the pixels are locating at the boundary)
@@ -85,7 +86,7 @@ function res = BTL_RDH( origin, blocksize, type, NUM, edge, data)
         data = Compression(l,data,1);
         [~,l1] = size(data);
         [~,l2] = size(bits);
-        data(l1+1:l1+l2) = bits(:); % the whole information to be embedded
+        data(l1+1:l1+l2) = bits(1:l2); % the whole information to be embedded
         [~,len] = size(locatex);
         capacity = len*(8-alpha); % caculate the embedding capacity
         % padding the data into length being the same as the capacity
@@ -94,7 +95,7 @@ function res = BTL_RDH( origin, blocksize, type, NUM, edge, data)
         % embedding the information into marked pixels
         no = 1; % index of the data
         for index = 1 : 1 : len
-            temp = Dec2bin(res(locates(index),locatey(index)),8);
+            temp = Dec2bin(res(locatex(index),locatey(index)),8);
             temp(alpha+1:8) = data(no:no+7-alpha);
             res(locatex(index),locatey(index)) = bin2dec(temp);
             no = no + 8-alpha;
@@ -103,7 +104,6 @@ function res = BTL_RDH( origin, blocksize, type, NUM, edge, data)
 end
 
 function [locatex, locatey, bits, res] = Prediction(origin, x, y, type, beta, labels, locatex, locatey, bits)
-    res = origin(x,y);
     if type == 0 % x-1 -> x
         error = double(origin(x,y)) - double(origin(x-1,y));
     elseif type == 1 % x+1 -> x
@@ -149,7 +149,7 @@ function [locatex, locatey, bits, res] = Prediction(origin, x, y, type, beta, la
         label = labels(index,:);
         tmp = '00000000';
         tmp(1:alpha) = label(:);
-        res(x,y) = bin2dec(tmp);
+        res = bin2dec(tmp);
         [~,no] = size(locatex);
         locatex(no+1) = x;
         locatey(no+1) = y;
@@ -158,6 +158,6 @@ function [locatex, locatey, bits, res] = Prediction(origin, x, y, type, beta, la
         tmp = Dec2bin(origin(x,y),8);
         bits(l+1:l+beta) = tmp(1:beta);
         tmp(1:beta) = '0';
-        res(x,y) = bin2dec(tmp);
+        res = bin2dec(tmp);
     end  
 end

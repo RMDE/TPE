@@ -15,10 +15,10 @@
 
 function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
     res = origin;
-    data = Selection( origin, blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
     [M,N,C] = size(origin);
     % High Capacity Reversible Data Hiding in Encrypted Image Based on Adaptive MSB Prediction
     if method == 0 
+       data = Selection( origin, blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
        %selecting the location of the first pixel in each block of embedding area 
        if type == 0
            data = Encode(data,MSB); % change the order of the MSBs
@@ -112,7 +112,10 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
         res = BC_RDH( origin, blocksize, MSB );
     end
     if method == 2
-        res = BTL_RDH( origin, blocksize, type, NUM, edge, data);
+        for i = 1 : 1 : C
+            data = Selection( origin(:,:,i), blocksize, MSB, NUM, type, edge );
+            res(:,:,i) = BTL_RDH( origin(:,:,i), blocksize, type, MSB, NUM, edge, data);
+        end
     end
         
 end
