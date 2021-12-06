@@ -112,40 +112,53 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
             end
         elseif type == 1
             length = NUM * MSB * M/blocksize * N/blocksize;
-            % the special condition (the pixels are locating at the boundary)
-            for i = M-1 : -1 : ceil(NUM/blocksize)
-                bin = Dec2bin(origin(i,N,channel),8);
-                com(1:beta) = '0';
-                if strcmp(bin(1:beta),com(1:beta)) ~= 1
-                    [~,l] = size(bits);
-                    bits(l+1,l+8-alpha) = bin(alpha+1:8);
-                end
-            end
-            for j = N-1 : -1 : 1
-                bin = Dec2bin(origin(1,M,channel),8);
-                com(1:beta) = '0';
-                if strcmp(bin(1:beta),com(1:beta)) ~= 1
-                    [~,l] = size(bits);
-                    bits(l+1,l+8-alpha) = bin(alpha+1:8);
-                end
-            end
-            % the common condition
-            count = N+M-ceil(NUM/blocksize);
-            for i = M-2 : -1 : 1
-                if count > NUM
-                        break;
-                end
-                for j = N-2 : -1 : 1
-                    if count > NUM
-                        break;
+            m = M/blocksize;
+            n = N/blocksize;
+            for p = 1 : 1 : m
+                for q = 1 : 1 : n
+                    % the location of the right down pixel in the block
+                    x = p * blocksize;
+                    y = q * blocksize;
+                    if mod(NUM,blocksize) == 0
+                        a = x - blocksize + NUM/blocksize + 1;
+                    else
+                        a = x - blocksize + ceil(NUM/blocksize);
                     end
-                    bin = Dec2bin(origin(1,j,channel),8);
-                    com(1:beta) = '0';
-                    if strcmp(bin(1:beta),com(1:beta)) ~= 1
-                        [~,l] = size(bits);
-                        bits(l+1,l+8-alpha) = bin(alpha+1:8);
+                    for i = x-1 : -1 : a
+                        bin = Dec2bin(origin(i,y,channel),8);
+                        com(1:beta) = '0';
+                        if strcmp(bin(1:beta),com(1:beta)) ~= 1
+                            [~,l] = size(bits);
+                            bits(l+1:l+8-alpha) = bin(alpha+1:8);
+                        end
                     end
-                    count = count + 1;
+                    for j = y-1 : -1 : y-blocksize+1
+                        bin = Dec2bin(origin(x,j,channel),8);
+                        com(1:beta) = '0';
+                        if strcmp(bin(1:beta),com(1:beta)) ~= 1
+                            [~,l] = size(bits);
+                            bits(l+1:l+8-alpha) = bin(alpha+1:8);
+                        end
+                    end
+                    % the common condition
+                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    for i = x-1 : -1 : x-blocksize+1
+                        if count > NUM
+                            break;
+                        end
+                        for j = y-1 : -1 : y-blocksize+1
+                            if count > NUM
+                                break;
+                            end
+                            bin = Dec2bin(origin(i,j,channel),8);
+                            com(1:beta) = '0';
+                            if strcmp(bin(1:beta),com(1:beta)) ~= 1
+                                [~,l] = size(bits);
+                                bits(l+1:l+8-alpha) = bin(alpha+1:8);
+                            end
+                            count = count + 1;
+                        end
+                    end
                 end
             end
             [~,l] = size(bits);
@@ -159,24 +172,38 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
             data = Decode(bits(1:length),MSB);
             % recovering high beta bits of pixels with beta labels
             no = length+1; % index of the bits
-            for i = M-1 : -1 : ceil(NUM/blocksize)
-                [no,res(i,N,channel)] = Reduction(res(:,:,channel), i, N, 1, beta, labels, bits, no);
-            end
-            for j = N-1 : -1 : 1
-                [no,res(M,j,channel)] = Reduction(res(:,:,channel), M, j, 3, beta, labels, bits, no);
-            end
-            % the common condition
-            count = N+M-ceil(NUM/blocksize);
-            for i = M-2 : -1 : 1
-                if count > NUM
-                        break;
-                end
-                for j = N-2 : -1 : 1
-                    if count > NUM
-                        break;
+            m = M/blocksize;
+            n = N/blocksize;
+            for p = 1 : 1 : m
+                for q = 1 : 1 : n
+                    % the location of the right down pixel in the block
+                    x = p * blocksize;
+                    y = q * blocksize;
+                    if mod(NUM,blocksize) == 0
+                        a = x - blocksize + NUM/blocksize + 1;
+                    else
+                        a = x - blocksize + ceil(NUM/blocksize);
                     end
-                    [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 5, beta, labels, bits, no);
-                    count = count + 1;
+                    for i = x-1 : -1 : a
+                        [no,res(i,y,channel)] = Reduction(res(:,:,channel), i, y, 1, beta, labels, bits, no);
+                    end
+                    for j = y-1 : -1 : y-blocksize+1
+                        [no,res(x,j,channel)] = Reduction(res(:,:,channel), x, j, 3, beta, labels, bits, no);
+                    end
+                    % the common condition
+                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    for i = x-1 : -1 : x-blocksize+1
+                        if count > NUM
+                            break;
+                        end
+                        for j = y-1 : -1 : y-blocksize+1
+                            if count > NUM
+                                break;
+                            end
+                            [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 5, beta, labels, bits, no);
+                            count = count + 1;
+                        end
+                    end
                 end
             end
         end

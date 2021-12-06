@@ -60,26 +60,40 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
             end
         elseif type == 1
             % the special condition (the pixels are locating at the boundary)
-            for i = M-1 : -1 : ceil(NUM/blocksize)
-                [locatex,locatey,bits,res(i,N,channel)] = Prediction(origin(:,:,channel),i,N,3,beta,labels,locatex,locatey,bits);
-            end
-            for j = N-1 : -1 : 1
-                [locatex,locatey,bits,res(M,j,channel)] = Prediction(origin(:,:,channel),M,j,1,beta,labels,locatex,locatey,bits);
-            end
-            % the common condition
-            count = N+M-ceil(NUM/blocksize);
-            for i = M-2 : -1 : 1
-                if count > NUM
-                        break;
-                end
-                for j = N-2 : -1 : 1
-                    if count > NUM
-                        break;
+            m = M/blocksize;
+            n = N/blocksize;
+            for p = 1 : 1 : m
+                for q = 1 : 1 : n
+                    % the location of the right down pixel in the block
+                    x = p * blocksize;
+                    y = q * blocksize;
+                    if mod(NUM,blocksize) == 0
+                        a = x - blocksize + NUM/blocksize + 1;
+                    else
+                        a = x - blocksize + ceil(NUM/blocksize);
                     end
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,5,beta,labels,locatex,locatey,bits);
-                    count = count + 1;
+                    for i = x-1 : -1 : a
+                        [locatex,locatey,bits,res(i,y,channel)] = Prediction(origin(:,:,channel),i,y,1,beta,labels,locatex,locatey,bits);
+                    end
+                    for j = y-1 : -1 : y-blocksize+1
+                        [locatex,locatey,bits,res(x,j,channel)] = Prediction(origin(:,:,channel),x,j,3,beta,labels,locatex,locatey,bits);
+                    end
+                    % the common condition
+                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    for i = x-1 : -1 : x-blocksize+1
+                        if count > NUM
+                            break;
+                        end
+                        for j = y-1 : -1 : y-blocksize+1
+                            if count > NUM
+                                break;
+                            end
+                            [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,5,beta,labels,locatex,locatey,bits);
+                            count = count + 1;
+                        end
+                    end
                 end
-            end        
+            end
         end
         data = Encode(data,MSB);
         [~,l] = size(data);
