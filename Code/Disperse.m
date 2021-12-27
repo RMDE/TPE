@@ -17,11 +17,12 @@ function res = Disperse( origin, number, type )
             end
         end
     else
-        res = zeors(1,M*N);
+        res = zeros(1,M*N);
         count = 1;
         for i = 1 : 1 : M
             for j = 1 : 1 : N
-                tmp = floor(double(origin(i,j))/2^number);
+                tmp = Dec2bin(origin(i,j),8);
+                tmp = tmp(8-number) - '0';
                 res(count) = uint8(tmp);
                 count = count + 1;
             end

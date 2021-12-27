@@ -22,32 +22,32 @@ end
 %k: the current interation number
 %I: the half-processed image
 function [bits,I] = Processing( bits, k, I )
-    [M,N] = size(I);
+    [M,N] = size(I); 
     if k < 7
         [Lloc, Lval] = MED(k,I);
         [~,l1] = size(Lval);
         if l1 >= (M*N-6)*8
             for i = k : 7
                 [~,l] = size(bits);
-                bits(l+1) = 0; % means not marked
-                bits(l+2:l+M*N+1) = Disperse(I,i,1);
+                bits(l+1:L+M*N) = Disperse(I,i,1); 
+                bits(l+M*N+1) = 0; % means not marked
             end
             return;
         else
             I = Adoptation(I,k,Lloc,Lval);
             [~,l] = size(bits);
-            bits(l+1) = 1; % means marked
             [~,length] = size(Lval);
+            bits(l+1:l+length) = Lval(1:length);
             len = Dec2bin(length,24);
-            bits(l+2) = bin2dec(len(1:8));
-            bits(l+3) = bin2dec(len(8:16));
-            bits(l+4) = bit2dec(len(17:24));
-            bits(l+5:l+length+4) = Lval(1:length);
+            bits(l+length+1) = bin2dec(len(1:8));
+            bits(l+length+2) = bin2dec(len(8:16));
+            bits(l+length+3) = bit2dec(len(17:24));
+            bits(l+length+4) = 1; % means marked
             [bits,I] = Processing(bits,k+1,I);
         end
     else
         [~,l] = size(bits);
-        bits(l+1) = 0; % means not marked
-        bits(l+2:l+M*N+1) = Disperse(I,7,1);
+        bits(l+1:l+M*N) = Disperse(I,7,1);
+        bits(l+M*N+1) = 0; % means not marked
     end 
 end
