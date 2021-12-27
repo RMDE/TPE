@@ -1,5 +1,5 @@
 %file: BC_RDH.m
-%function: the second data hiding method to compress all bit-plane in orser to reserve the whole highest bit-plane for adjustment 
+%function: the second data hiding method to compress all bit-plane in order to reserve the whole highest bit-plane for adjustment 
 %origin: the original image
 %blocksize: the blocksize for rearrangement process
 %L: the length that decide whether compress continuously the same bits or not
@@ -84,7 +84,7 @@ function res = BC_RDH( origin, blocksize, L )
                 end
             end
         end
-        planes = Disperse(error,8); % disperse the channal into eight bit-planes 
+        planes = Disperse(error,8,0); % disperse the channal into eight bit-planes 
         comp = zeros(1,M*N*7); % store the compressed bit planes
         temp = zeros(1,M*N); % store the current compressed bit-plane without auxiliary information
         count = 0; % record the number of the continuously same bits

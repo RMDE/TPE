@@ -8,7 +8,7 @@ function res = BC_RDH_r( origin, blocksize, L )
     res = origin;
     [M,N,C] = size(origin);
     for channal = 1 : 1 : C
-        planes = Disperse(origin(:,:,channal),8);
+        planes = Disperse(origin(:,:,channal),8,0);
         % planes: [M,N,7] -> streams: [M*N*7,1,1]
         for i = 1 : 1 : 7
             for j = 1 : 1 : M
