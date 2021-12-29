@@ -117,5 +117,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
             res(:,:,i) = BTL_RDH( origin(:,:,i), blocksize, type, MSB, NUM, edge, data);
         end
     end
-        
+    if method == 3
+        res = RA_RDH( origin );
+    end   
 end
