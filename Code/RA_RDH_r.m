@@ -26,7 +26,13 @@ function I = Processing( bits, k, I )
         length = bin2dec(bits(l-32:l-9));
         Lval = bits(l-32-length:l-33);
         bits = bits(1:l-33-length);
-        % TODO:process Lval bits to integer
+        temp = zeros(length/8,8);
+        count = 1;
+        for i = 1 : 7-k : length
+            temp(count,:) = Lval(i:i+6-k);
+            count = count + 1;
+        end
+        Lval = bin2dec(char(temp));
         I = Reconstruction(I,Lval);
     else
         [M,N] = size(I);
@@ -43,5 +49,11 @@ function I = Processing( bits, k, I )
         end
     end
     I = Procesing(bits,k-1,I);
-        
+end
+
+%function: recover the image using Lval
+%I: the image to recovery
+%Lval: the information for recovery
+function I = Reconstruction(I,Lval)
+    
 end

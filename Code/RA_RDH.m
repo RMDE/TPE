@@ -34,8 +34,9 @@ function [bits,I] = Processing( bits, k, I )
             end
             return;
         else
-            % TODO: process the Lval integer to bits
             I = Adoptation(I,k,Lloc,Lval);
+            Lval = dec2bin(Lval,7-k);
+            Lval = Lval(:);
             [~,l] = size(bits);
             [~,length] = size(Lval);
             bits(l+1:l+length) = Lval(1:length);
@@ -50,4 +51,19 @@ function [bits,I] = Processing( bits, k, I )
         bits(l+1:l+M*N) = Disperse(I,7,1);
         bits(l+M*N+1) = 0; % means not marked
     end 
+end
+
+%function: changing the low 8-k bits for recover process
+%I: the original image
+%Lloc: judge whether the cooresponding pixel should be adopted
+%Lval: the value of adopting
+function I = Adoptation(I,k,Lloc,Lval)
+    
+end
+
+%function: MED prediction
+%k: the n0. of the current bit-plane to compress
+%I: the original image
+function [Lloc, Lval] = MED(k,I)
+    
 end
