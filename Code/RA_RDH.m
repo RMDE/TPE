@@ -34,15 +34,15 @@ function [bits,I] = Processing( bits, k, I )
             end
             return;
         else
+            % TODO: process the Lval integer to bits
             I = Adoptation(I,k,Lloc,Lval);
             [~,l] = size(bits);
             [~,length] = size(Lval);
             bits(l+1:l+length) = Lval(1:length);
             len = Dec2bin(length,24);
-            bits(l+length+1) = bin2dec(len(1:8));
-            bits(l+length+2) = bin2dec(len(8:16));
-            bits(l+length+3) = bit2dec(len(17:24));
-            bits(l+length+4) = 1; % means marked
+            bits(l+length+1:l+length+24) = len(1:24);
+            bits(l+length+25:l+length+32) = Dec2bin(I(1,1),8);
+            bits(l+length+33) = 1; % means marked
             [bits,I] = Processing(bits,k+1,I);
         end
     else
