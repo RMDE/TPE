@@ -26,7 +26,7 @@ function [bits,I] = Processing( bits, k, I )
     if k < 7
         [Lloc, Lval] = MED(k,I);
         [~,l1] = size(Lval);
-        if l1 >= (M*N-6)*8
+        if l1 >= floor((M*N-33)/(7-k))
             for i = k : 7
                 [~,l] = size(bits);
                 bits(l+1:L+M*N) = Disperse(I,i,1); 
