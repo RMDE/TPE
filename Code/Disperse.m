@@ -21,8 +21,8 @@ function res = Disperse( origin, number, type )
         count = 1;
         for i = 1 : 1 : M
             for j = 1 : 1 : N
-                tmp = Dec2bin(origin(i,j),8);
-                tmp = tmp(8-number);
+                tmp = dec2bin(origin(i,j),8);
+                tmp = tmp(8-number)-'0';
                 res(count) = tmp;
                 count = count + 1;
             end
