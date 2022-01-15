@@ -6,4 +6,5 @@ test.*
 *.asv
 *.png
 !original.png
+!photo/*.png
 
