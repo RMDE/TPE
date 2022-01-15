@@ -59,10 +59,12 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                 locatey(no:no+edge-2) = N-edge+2 : N;
                 no = no + edge - 1;
             end
+            count = 0;
             for index = 1 : 1 : no-1
-                bin = Dec2bin(origin(locatex(index),locatey(index),channel),8);
+                bin = dec2bin(origin(locatex(index),locatey(index),channel),8);
                 com(1:beta) = '0';
                 if strcmp(bin(1:beta),com(1:beta)) ~= 1
+                    count = count + 1;
                     [~,l] = size(bits);
                     bits(l+1:l+8-alpha) = bin(alpha+1:8);
                 end
@@ -193,11 +195,11 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                     % the common condition
                     count = 2*blocksize-floor(NUM/blocksize)-1;
                     for i = x-1 : -1 : x-blocksize+1
-                        if count > NUM
+                        if count > blocksize*blocksize-NUM
                             break;
                         end
                         for j = y-1 : -1 : y-blocksize+1
-                            if count > NUM
+                            if count > blocksize*blocksize-NUM
                                 break;
                             end
                             [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 5, beta, labels, bits, no);

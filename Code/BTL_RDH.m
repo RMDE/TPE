@@ -81,11 +81,11 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
                     % the common condition
                     count = 2*blocksize-floor(NUM/blocksize)-1;
                     for i = x-1 : -1 : x-blocksize+1
-                        if count > NUM
+                        if count > blocksize*blocksize-NUM
                             break;
                         end
                         for j = y-1 : -1 : y-blocksize+1
-                            if count > NUM
+                            if count > blocksize*blocksize-NUM
                                 break;
                             end
                             [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,5,beta,labels,locatex,locatey,bits);
@@ -103,15 +103,16 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
         data(l1+1:l1+l2) = bits(1:l2); % the whole information to be embedded
         [~,len] = size(locatex);
         capacity = len*(8-alpha); % caculate the embedding capacity
+        capacity,l1+l2
         % padding the data into length being the same as the capacity
         data (l1+l2+1) = '1';
         data(l1+l2+2:capacity) = '0';
         % embedding the information into marked pixels
         no = 1; % index of the data
         for index = 1 : 1 : len
-            temp = Dec2bin(res(locatex(index),locatey(index)),8);
+            temp = Dec2bin(res(locatex(index),locatey(index),channel),8);
             temp(alpha+1:8) = data(no:no+7-alpha);
-            res(locatex(index),locatey(index)) = bin2dec(temp);
+            res(locatex(index),locatey(index),channel) = bin2dec(temp);
             no = no + 8-alpha;
         end
     end

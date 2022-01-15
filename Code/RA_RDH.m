@@ -36,7 +36,7 @@ function [bits,I] = Processing( bits, k, I )
         if l1 >= floor((M*N-25)/(8-k))
             for i = k : 7
                 [~,l] = size(bits);
-                bits(l+1:l+M*N) = Disperse(I,i,1); 
+                bits(l+1:l+M*N) = Disperse(I,7-i,1); 
                 bits(l+M*N+1) = 0; % means not marked
             end
             [~,l] = size(bits);

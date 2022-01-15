@@ -94,7 +94,6 @@ function I = Reconstruction(I, Lval, k)
             delta0 = abs(pred-p0);
             delta1 = abs(pred-p1);
             if (delta0==2^(6-k)&&delta1==2^(6-k)) || (delta0==2^(6-k)&&delta1==2^(6-k)+2^(7-k)) || (delta1==2^(6-k)&&delta0==2^(6-k)+2^(7-k))
-%             if (delta0~=2^(6-k)||delta1~=2^(6-k)+2^(7-k)) && (delta0~=2^(6-k)+2^(7-k)||delta1~=2^(6-k)) && (delta0~=2^(6-k)||delta1==2^(6-k)) && (delta0==2^(6-k)||delta1~=2^(6-k))
                 if abs(Lval(index)) ~= 2^(6-k)+1
                     p0 = mod(int32(p0)-int32(Lval(index)),2^(8-k));
                     p1 = mod(int32(p1)-int32(Lval(index)),2^(8-k));
