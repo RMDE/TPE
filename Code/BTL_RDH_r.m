@@ -143,13 +143,13 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                         end
                     end
                     % the common condition
-                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    count = 2*blocksize-floor(NUM/blocksize);
                     for i = x-1 : -1 : x-blocksize+1
-                        if count > NUM
+                        if count > blocksize*blocksize-NUM
                             break;
                         end
                         for j = y-1 : -1 : y-blocksize+1
-                            if count > NUM
+                            if count > blocksize*blocksize-NUM
                                 break;
                             end
                             bin = Dec2bin(origin(i,j,channel),8);
@@ -193,7 +193,7 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                         [no,res(x,j,channel)] = Reduction(res(:,:,channel), x, j, 3, beta, labels, bits, no);
                     end
                     % the common condition
-                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    count = 2*blocksize-floor(NUM/blocksize);
                     for i = x-1 : -1 : x-blocksize+1
                         if count > blocksize*blocksize-NUM
                             break;

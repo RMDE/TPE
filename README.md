@@ -49,7 +49,7 @@
       
         - framework
       
-          <img src="D:\Project\TPE\photo\method1-framework.png" alt="method1-framework" style="zoom:50%;" />
+          <img src="photo\method1-framework.png" alt="method1-framework" style="zoom:50%;" />
       
         - application
       
@@ -123,9 +123,23 @@
           
           - distribution 1
           
-            - parametric: blocksize, MSB, type=0, edge, method=2
+            - parametric: blocksize, MSB, edge=NUM, type=0, method=2
           
-              
+              ![3-2-para](photo\3-2-para.png)
+            
+            - visual result
+            
+              <img src="photo\2-0-8.1.20.png" alt="2-0-8.1.20" style="zoom:10%;" /><img src="photo\2-0-16.1.20.png" alt="2-0-16.1.20" style="zoom:10%;" /><img src="photo\2-0-32.1.20.png" alt="2-0-32.1.20" style="zoom:10%;" /><img src="photo\2-0-64.1.20.png" alt="2-0-64.1.20" style="zoom:10%;" />
+            
+              <img src="photo\2-0-8.2.55.png" alt="2-0-8.2.55" style="zoom:10%;" /><img src="photo\2-0-16.2.55.png" alt="2-0-16.2.55" style="zoom:10%;" /><img src="photo\2-0-32.2.55.png" alt="2-0-32.2.55" style="zoom:10%;" /><img src="photo\2-0-64.2.55.png" alt="2-0-64.2.55" style="zoom:10%;" />
+            
+              <img src="photo\2-0-8.3.100.png" alt="2-0-8.3.100" style="zoom:10%;" /><img src="photo\2-0-16.3.100.png" alt="2-0-16.3.100" style="zoom:10%;" /><img src="photo\2-0-32.3.100.png" alt="2-0-32.3.100" style="zoom:10%;" /><img src="photo\2-0-64.3.100.png" alt="2-0-64.3.100" style="zoom:10%;" />
+            
+          - distribution 2
+          
+            - parametric: blocksize, MSB, NUM, edge=0, type=1, method=2
+          
+            - visual result
       
       
       

@@ -79,7 +79,7 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
                         [locatex,locatey,bits,res(x,j,channel)] = Prediction(origin(:,:,channel),x,j,3,beta,labels,locatex,locatey,bits);
                     end
                     % the common condition
-                    count = 2*blocksize-floor(NUM/blocksize)-1;
+                    count = 2*blocksize-floor(NUM/blocksize);
                     for i = x-1 : -1 : x-blocksize+1
                         if count > blocksize*blocksize-NUM
                             break;
