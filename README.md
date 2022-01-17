@@ -31,7 +31,46 @@
 
       - method 0
 
-        - 
+        - paper
+
+          High Capacity Reversible Data Hiding in Image Based on Adaptive MSB Prediction
+
+        - key idea
+
+          - based on the 2x2 bolck
+          - using MED prediction
+          - in each block, find the max shared high bits of four pixels and reverse the extra room for embedding, remaining the left up pixel origin for recovery process
+
+        - framework
+
+          ![method0-framework](photo\method0-framework.png)
+
+        - application
+
+          divide the image into two areas: the embedding area and the adjustment area; the adjustment area is to adjust high rho bits of each pixel in the area so the original high rho bits value of pixels in the adjustment area are embedded into the embedding area for recovery process
+
+          - distribution 0
+          - distribution 1
+
+        - experiment result
+
+          - example: "lena" 1024x1024
+
+          - distribution 1
+
+            - parametric: blocksize, MSB, edge=NUM, type=0, method=0
+
+              
+
+            - visual result
+
+          - distribution 2
+
+            - parametric: blocksize, MSB, NUM, edge=0, type=1, method=0
+
+              
+
+            - visual result
 
         
 
@@ -46,54 +85,54 @@
           - based on bit-plane operation
           - for each bit-plane, blocking into 2x2 block and rearrange the bits, then compress them 
           - using MED to predict pixels
-      
+
         - framework
-      
+
           <img src="photo\method1-framework.png" alt="method1-framework" style="zoom:50%;" />
-      
+
         - application
-      
+
           store all information for recovery in low bit-planes and keep high bit-planes free to adjust
-      
+
         - experiment result
-      
+
           - example: "lena" 1024x1024
-      
-          - parametric: blocksize, NUM, MSB, type=3|1, method=3
-      
+
+          - parametric: blocksize, NUM, MSB, type=3|1, method=1
+
           - length of stored information / total room in each channel
-      
-            - R:  4698300 / 8388608
-            - G: 5363088 / 8388608 
-            - B:  5677439 / 8388608
-      
-          - max number of bits that can be freed: 2.58
-      
-          - visual result
-      
+
+            - R:  3448560/ 8388608
+            - G:  3861643/ 8388608 
+            - B:  4072728/ 8388608
+
+          - max number of bits that can be freed: 4.12
+
+          - visual result: the result is similar to method 3
+
         
-      
+
       - method 2
-      
+
         - paper
-      
+
           An Improved Reversible Data Hiding in Encrypted Images Using Parametric Binary Tree Labeling 
-      
+
         - key idea
-      
+
           - Exploiting the spatial correlation of the whole image  but not inside one block
-      
+
           - using parametric binary label tree to label encrypted pixels
           - if the result of prediction value - original value in valid range, it can be labeled successfully belonging to group G1, else it belong to G2 
           - using MED to prediction
-      
+
         - framework
-      
+
           <img src="photo\method2-framework.png" alt="method2-framework" style="zoom: 67%;" />
-      
+
         - application
-      
-          divide the image into two areas: the embedding area and the adjustment area; the adjustment area is to adjust high rho bits of each pixel in the erea so the original high rho bits value of pixels in the adjustment area are embedded into the embedding area for recovery process
+
+          divide the image into two areas: the embedding area and the adjustment area; the adjustment area is to adjust high rho bits of each pixel in the area so the original high rho bits value of pixels in the adjustment area are embedded into the embedding area for recovery process
           
           - distribution 1
           
@@ -118,14 +157,14 @@
             In order to ensure the consistency of embedding and extraction processes, the traversal order of embedding must be the same as that of extraction.
           
         - experiment result
-      
+
           - example: "lena" 1024x1024
           
           - distribution 1
           
             - parametric: blocksize, MSB, edge=NUM, type=0, method=2
           
-              ![3-2-para](photo\3-2-para.png)
+              ![2-1-para](photo\2-1-para.png)
             
             - visual result
             
@@ -139,12 +178,22 @@
           
             - parametric: blocksize, MSB, NUM, edge=0, type=1, method=2
           
+              ![2-2-para](\photo\2-2-para.png)
+            
             - visual result
+            
+              <img src="photo\2-1-8.1.52.png" alt="2-1-8.1.52" style="zoom:10%;" /><img src="photo\2-1-8.2.45.png" alt="2-1-8.2.45" style="zoom:10%;" /><img src="photo\2-1-8.3.35.png" alt="2-1-8.3.35" style="zoom:10%;" />
+            
+              <img src="photo\2-1-16.1.220.png" alt="2-1-16.1.220" style="zoom:10%;" /><img src="photo\2-1-16.2.190.png" alt="2-1-16.2.190" style="zoom:10%;" /><img src="photo\2-1-16.3.150.png" alt="2-1-16.3.150" style="zoom:10%;" />
+            
+              <img src="photo\2-1-32.1.900.png" alt="2-1-32.1.900" style="zoom:10%;" /><img src="photo\2-1-32.2.780.png" alt="2-1-32.2.780" style="zoom:10%;" /><img src="photo\2-1-32.3.600.png" alt="2-1-32.3.600" style="zoom:10%;" />
+            
+              <img src="photo\2-1-64.1.3550.png" alt="2-1-64.1.3550" style="zoom:10%;" /><img src="photo\2-1-64.2.3150.png" alt="2-1-64.2.3150" style="zoom:10%;" /><img src="photo\2-1-64.3.2500.png" alt="2-1-64.3.2500" style="zoom:10%;" />
+
       
-      
-      
+
       - method 3
-      
+
         - paper
         
           A Recursive Reversible Data Hiding in Encrypted Images Method With a Very High Payload
@@ -173,7 +222,7 @@
           - length of stored information / total room in each channel
           
             - R:  4698300 / 8388608
-            - G: 5363088 / 8388608 
+            - G:  5363088 / 8388608 
             - B:  5677439 / 8388608
         
           - max number of bits that can be freed: 2.58

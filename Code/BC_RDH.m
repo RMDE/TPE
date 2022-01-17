@@ -5,6 +5,7 @@
 %L: the length that decide whether compress continuously the same bits or not
 
 function res = BC_RDH( origin, blocksize, L )
+    L = 4;
     res = origin;
     % prediction for simplifing pixels
     % the first line and the first column remain unchange
@@ -85,15 +86,15 @@ function res = BC_RDH( origin, blocksize, L )
             end
         end
         planes = Disperse(error,8,0); % disperse the channal into eight bit-planes 
-        comp = zeros(1,M*N*7); % store the compressed bit planes
+        comp = zeros(1,M*N*8); % store the compressed bit planes
         temp = zeros(1,M*N); % store the current compressed bit-plane without auxiliary information
         count = 0; % record the number of the continuously same bits
         % store the locate_map
         locate_map = Compression(M*N,locate_map,1);
         [~,l] = size(locate_map);
-        comp(1:24) = Dec2bin(l,24)-'0';
-        comp(25:24+l) = locate_map(:);
-        ci = l + 25; %index of the comp
+        comp(M*N*8-23:M*N*8) = dec2bin(l,24)-'0';
+        comp(M*N*8-23-l:M*N*8-24) = locate_map(:);
+        ci = M*N*8 - 48 - l; %index of the comp
         for i = 1 : 1 : 8
             index = 1; % index of the streams
             no = 1; % index of the temp
@@ -139,21 +140,22 @@ function res = BC_RDH( origin, blocksize, L )
             if no-1 >= M*N
                 comp(ci) = 0;
                 for line = 1 : 1 : M
-                    comp(ci+(line-1)*N+1:ci+line*N) = planes(line,:,i);
+                    comp(ci-line*N : ci-(line-1)*N-1 ) = planes(line,N:-1:1,i);
                 end
-                ci = ci + M*N + 1;
+                ci = ci - M*N - 1;
             else
                 comp(ci) = 1;
-                comp(ci+1:ci+2) = [0,1];
-                comp(ci+3:ci+no+1) = temp(1:no-1);
-                ci = ci + no + 2;
+                comp(ci-2:ci-1) = [0,1];
+                comp(ci-no-1:ci-3) = temp(no-1:-1:1);
+                ci = ci - no - 2;
             end
         end
         % embed the total length of the compressed bit-planes into the end of the planes 
-        comp(M*N*7-23:M*N*7) = Dec2bin(ci-1,24)-'0';
+        comp(M*N*8-47-l:M*N*8-24-l) = dec2bin(M*N*8-48-l-ci,24)-'0';
+        length = M*N*8-48-l-ci
         streams = zeros(M*N,8);
-        for i = 1 : 1 : 7
-            streams(:,i) = comp((i-1)*M*N+1:i*M*N);
+        for i = 1 : 1 : 8
+            streams(:,9-i) = comp((i-1)*M*N+1:i*M*N);
         end
         res(:,:,chanal) = Merge(streams,M,N); % merge eight bit-plane bitstreams into one plane of the channal 
     end
