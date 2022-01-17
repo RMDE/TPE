@@ -168,27 +168,27 @@
             
             - visual result
             
-              <img src="photo\2-0-8.1.20.png" alt="2-0-8.1.20" style="zoom:10%;" /><img src="photo\2-0-16.1.20.png" alt="2-0-16.1.20" style="zoom:10%;" /><img src="photo\2-0-32.1.20.png" alt="2-0-32.1.20" style="zoom:10%;" /><img src="photo\2-0-64.1.20.png" alt="2-0-64.1.20" style="zoom:10%;" />
+              <img src="photo\2-0-8.1.20.png" alt="2-0-8.1.20" style="zoom:100%;" /><img src="photo\2-0-16.1.20.png" alt="2-0-16.1.20" style="zoom:100%;" /><img src="photo\2-0-32.1.20.png" alt="2-0-32.1.20" style="zoom:100%;" /><img src="photo\2-0-64.1.20.png" alt="2-0-64.1.20" style="zoom:100%;" />
             
-              <img src="photo\2-0-8.2.55.png" alt="2-0-8.2.55" style="zoom:10%;" /><img src="photo\2-0-16.2.55.png" alt="2-0-16.2.55" style="zoom:10%;" /><img src="photo\2-0-32.2.55.png" alt="2-0-32.2.55" style="zoom:10%;" /><img src="photo\2-0-64.2.55.png" alt="2-0-64.2.55" style="zoom:10%;" />
+              <img src="photo\2-0-8.2.55.png" alt="2-0-8.2.55" style="zoom:100%;" /><img src="photo\2-0-16.2.55.png" alt="2-0-16.2.55" style="zoom:100%;" /><img src="photo\2-0-32.2.55.png" alt="2-0-32.2.55" style="zoom:100%;" /><img src="photo\2-0-64.2.55.png" alt="2-0-64.2.55" style="zoom:100%;" />
             
-              <img src="photo\2-0-8.3.100.png" alt="2-0-8.3.100" style="zoom:10%;" /><img src="photo\2-0-16.3.100.png" alt="2-0-16.3.100" style="zoom:10%;" /><img src="photo\2-0-32.3.100.png" alt="2-0-32.3.100" style="zoom:10%;" /><img src="photo\2-0-64.3.100.png" alt="2-0-64.3.100" style="zoom:10%;" />
+              <img src="photo\2-0-8.3.100.png" alt="2-0-8.3.100" style="zoom:100%;" /><img src="photo\2-0-16.3.100.png" alt="2-0-16.3.100" style="zoom:100%;" /><img src="photo\2-0-32.3.100.png" alt="2-0-32.3.100" style="zoom:100%;" /><img src="photo\2-0-64.3.100.png" alt="2-0-64.3.100" style="zoom:100%;" />
             
           - distribution 2
           
             - parametric: blocksize, MSB, NUM, edge=0, type=1, method=2
           
-              ![2-2-para](\photo\2-2-para.png)
+              ![2-2-para](photo\2-2-para.png)
             
             - visual result
             
-              <img src="photo\2-1-8.1.52.png" alt="2-1-8.1.52" style="zoom:10%;" /><img src="photo\2-1-8.2.45.png" alt="2-1-8.2.45" style="zoom:10%;" /><img src="photo\2-1-8.3.35.png" alt="2-1-8.3.35" style="zoom:10%;" />
+              <img src="photo\2-1-8.1.52.png" alt="2-1-8.1.52" style="zoom:100%;" /><img src="photo\2-1-8.2.45.png" alt="2-1-8.2.45" style="zoom:100%;" /><img src="photo\2-1-8.3.35.png" alt="2-1-8.3.35" style="zoom:100%;" />
             
-              <img src="photo\2-1-16.1.220.png" alt="2-1-16.1.220" style="zoom:10%;" /><img src="photo\2-1-16.2.190.png" alt="2-1-16.2.190" style="zoom:10%;" /><img src="photo\2-1-16.3.150.png" alt="2-1-16.3.150" style="zoom:10%;" />
+              <img src="photo\2-1-16.1.220.png" alt="2-1-16.1.220" style="zoom:100%;" /><img src="photo\2-1-16.2.190.png" alt="2-1-16.2.190" style="zoom:100%;" /><img src="photo\2-1-16.3.150.png" alt="2-1-16.3.150" style="zoom:100%;" />
             
-              <img src="photo\2-1-32.1.900.png" alt="2-1-32.1.900" style="zoom:10%;" /><img src="photo\2-1-32.2.780.png" alt="2-1-32.2.780" style="zoom:10%;" /><img src="photo\2-1-32.3.600.png" alt="2-1-32.3.600" style="zoom:10%;" />
+              <img src="photo\2-1-32.1.900.png" alt="2-1-32.1.900" style="zoom:100%;" /><img src="photo\2-1-32.2.780.png" alt="2-1-32.2.780" style="zoom:100%;" /><img src="photo\2-1-32.3.600.png" alt="2-1-32.3.600" style="zoom:100%;" />
             
-              <img src="photo\2-1-64.1.3550.png" alt="2-1-64.1.3550" style="zoom:10%;" /><img src="photo\2-1-64.2.3150.png" alt="2-1-64.2.3150" style="zoom:10%;" /><img src="photo\2-1-64.3.2500.png" alt="2-1-64.3.2500" style="zoom:10%;" />
+              <img src="photo\2-1-64.1.3550.png" alt="2-1-64.1.3550" style="zoom:100%;" /><img src="photo\2-1-64.2.3150.png" alt="2-1-64.2.3150" style="zoom:100%;" /><img src="photo\2-1-64.3.2500.png" alt="2-1-64.3.2500" style="zoom:100%;" />
 
       
 
