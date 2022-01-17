@@ -43,7 +43,7 @@
 
         - framework
 
-          ![method0-framework](photo\method0-framework.png)
+          <img src="photo\method0-framework.png" alt="method0-framework" style="zoom:100%;" />
 
         - application
 
@@ -144,11 +144,11 @@
           
             3: the adjustment area
           
-            ![distribution2-1](photo\distribution2-1.png)
+            <img src="photo\distribution2-1.png" alt="distribution2-1" style="zoom:100%;" />
           
           - distribution 2
           
-            ![distribution2-2](photo\distribution2-2.png)
+            <img src="photo\distribution2-2.png" alt="distribution2-2" style="zoom:100%;" />
           
           - tip
           
@@ -164,7 +164,7 @@
           
             - parametric: blocksize, MSB, edge=NUM, type=0, method=2
           
-              ![2-1-para](photo\2-1-para.png)
+              <img src="photo\2-1-para.png" alt="2-1-para" style="zoom:100%;" />
             
             - visual result
             
@@ -178,7 +178,7 @@
           
             - parametric: blocksize, MSB, NUM, edge=0, type=1, method=2
           
-              ![2-2-para](photo\2-2-para.png)
+              <img src="photo\2-2-para.png" alt="2-2-para" style="zoom:100%;" />
             
             - visual result
             
@@ -207,7 +207,7 @@
         
         - framework
         
-          ![method3-framework](photo\method3-framework.png)
+          <img src="photo\method3-framework.png" alt="method3-framework" style="zoom:100%;" />
         
         - application
         
