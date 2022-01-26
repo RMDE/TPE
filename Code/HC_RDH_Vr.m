@@ -34,7 +34,7 @@ function [data,res] = HC_RDH_Vr( origin, locatex, locatey )
                 res(locatex(index),locatey(index),chanal) = bin2dec(bits(count:count+7));
                 res(locatex(index),locatey(index)+1,chanal) = bin2dec(bits(count+8:count+15));
                 res(locatex(index)+1,locatey(index),chanal) = bin2dec(bits(count+16:count+23));
-                res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(bits(count+24:count+32));
+                res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(bits(count+24:count+31));
                 count = count + 32;
             else
                 pred = bits(count:count+7);

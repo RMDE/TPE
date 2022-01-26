@@ -49,9 +49,16 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            % data hiding using the method 1
-           [data,ExtImage] = HC_RDH_Vr(origin, locatex, locatey); 
-           data = Decompression((M-edge*2)*(N-edge*2)*MSB*C,data,1);
-           data = Decode(data,MSB);
+           ExtImage = origin;
+           data = [];
+           for channel = 1 : 1 : C
+               [temp,ExtImage(:,:,channel)] = HC_RDH_Vr(origin(:,:,channel), locatex, locatey); 
+               temp = Decompression((M-edge*2)*(N-edge*2)*MSB,temp,1);
+               temp = Decode(temp,MSB);
+               [~,l1] = size(data);
+               [~,l2] = size(temp);
+               data(l1+1:l1+l2) = temp(1:l2);
+           end
        end
        if type == 1
            m = M/blocksize;

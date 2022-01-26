@@ -49,89 +49,112 @@
 
           divide the image into two areas: the embedding area and the adjustment area; the adjustment area is to adjust high rho bits of each pixel in the area so the original high rho bits value of pixels in the adjustment area are embedded into the embedding area for recovery process
 
-          - distribution 0
           - distribution 1
-
-        - experiment result
-
-          - example: "lena" 1024x1024
-
-          - distribution 1
-
-            - parametric: blocksize, MSB, edge=NUM, type=0, method=0
-
-              
-
-            - visual result
-
+      
+            <img src="photo\distribution0-1.png" alt="distribution0-1" style="zoom:100%;" />
+      
           - distribution 2
-
-            - parametric: blocksize, MSB, NUM, edge=0, type=1, method=0
-
-              
-
+      
+            A: the adjustment area
+      
+            Er: record the locate_map
+      
+            Eo: the area for embedding operation
+      
+            <img src="photo\distribution0-2.png" alt="distribution0-2" style="zoom:100%;" />
+      
+        - experiment result
+      
+          - example: "lena" 1024x1024
+      
+          - distribution 1
+      
+            - parametric: blocksize, MSB, edge=NUM, type=0, method=0 
+      
+              ![0-1-para](photo\0-1-para.png)
+      
             - visual result
-
+      
+              <img src="photo\0-0-8.1.38.png" alt="0-0-8.1.38" style="zoom:100%;" /><img src="photo\0-0-16.1.38.png" alt="0-0-16.1.38" style="zoom:100%;" /><img src="photo\0-0-32.1.38.png" alt="0-0-32.1.38" style="zoom:100%;" /><img src="photo\0-0-64.1.38.png" alt="0-0-64.1.38" style="zoom:100%;" />
+      
+              <img src="photo\0-0-8.2.90.png" alt="0-0-8.2.90" style="zoom:100%;" /><img src="photo\0-0-16.2.90.png" alt="0-0-16.2.90" style="zoom:100%;" /><img src="photo\0-0-32.2.90.png" alt="0-0-32.2.90" style="zoom:100%;" /><img src="photo\0-0-64.2.90.png" alt="0-0-64.2.90" style="zoom:100%;" />
+      
+              <img src="photo\0-0-8.3.150.png" alt="0-0-8.3.150" style="zoom:100%;" /><img src="photo\0-0-16.3.150.png" alt="0-0-16.3.150" style="zoom:100%;" /><img src="photo\0-0-32.3.150.png" alt="0-0-32.3.150" style="zoom:100%;" /><img src="photo\0-0-64.3.150.png" alt="0-0-64.3.150" style="zoom:100%;" />
+      
+          - distribution 2
+          
+            - parametric: blocksize, MSB, NUM, edge=0, type=1, method=0 (NUM/blocksize must be even and blocksize-mod(NUM, blocksize) must > length of compressed locate_map)
+          
+              <img src="photo\0-2-para.png" alt="0-2-para" style="zoom:100%;" />
+          
+            - visual result
+            
+              <img src="photo\0-1-8.1.30.png" alt="0-1-8.1.30" style="zoom:100%;" /><img src="photo\0-1-16.1.180.png" alt="0-1-16.1.180" style="zoom:100%;" /><img src="photo\0-1-32.1.820.png" alt="0-1-32.1.820" style="zoom:100%;" /><img src="photo\0-1-64.1.3398.png" alt="0-1-64.1.3398" style="zoom:100%;" />
+            
+              <img src="photo\0-1-8.2.30.png" alt="0-1-8.2.30" style="zoom:100%;" /><img src="photo\0-1-16.2.156.png" alt="0-1-16.2.156" style="zoom:100%;" /><img src="photo\0-1-32.2.690.png" alt="0-1-32.2.690" style="zoom:100%;" /><img src="photo\0-1-64.2.2886.png" alt="0-1-64.2.2886" style="zoom:100%;" />
+            
+              <img src="photo\0-1-8.3.30.png" alt="0-1-8.3.30" style="zoom:100%;" /><img src="photo\0-1-16.3.124.png" alt="0-1-16.3.124" style="zoom:100%;" /><img src="photo\0-1-32.3.498.png" alt="0-1-32.3.498" style="zoom:100%;" /><img src="photo\0-1-64.3.2118.png" alt="0-1-64.3.2118" style="zoom:100%;" />
+      
         
-
+      
       - method 1
-
+      
         - paper
-
+      
           Reversible Data Hiding in Encrypted Images Based on Pixel Prediction and Bit-plane Compression
-
+      
         - key idea
-
+      
           - based on bit-plane operation
           - for each bit-plane, blocking into 2x2 block and rearrange the bits, then compress them 
           - using MED to predict pixels
-
+      
         - framework
-
+      
           <img src="photo\method1-framework.png" alt="method1-framework" style="zoom:50%;" />
-
+      
         - application
-
+      
           store all information for recovery in low bit-planes and keep high bit-planes free to adjust
-
+      
         - experiment result
-
+      
           - example: "lena" 1024x1024
-
+      
           - parametric: blocksize, NUM, MSB, type=3|1, method=1
-
+      
           - length of stored information / total room in each channel
-
+      
             - R:  3448560/ 8388608
             - G:  3861643/ 8388608 
             - B:  4072728/ 8388608
-
+      
           - max number of bits that can be freed: 4.12
-
+      
           - visual result: the result is similar to method 3
-
+      
         
-
+      
       - method 2
-
+      
         - paper
-
+      
           An Improved Reversible Data Hiding in Encrypted Images Using Parametric Binary Tree Labeling 
-
+      
         - key idea
-
+      
           - Exploiting the spatial correlation of the whole image  but not inside one block
-
+      
           - using parametric binary label tree to label encrypted pixels
           - if the result of prediction value - original value in valid range, it can be labeled successfully belonging to group G1, else it belong to G2 
           - using MED to prediction
-
+      
         - framework
-
+      
           <img src="photo\method2-framework.png" alt="method2-framework" style="zoom: 67%;" />
-
+      
         - application
-
+      
           divide the image into two areas: the embedding area and the adjustment area; the adjustment area is to adjust high rho bits of each pixel in the area so the original high rho bits value of pixels in the adjustment area are embedded into the embedding area for recovery process
           
           - distribution 1
@@ -157,7 +180,7 @@
             In order to ensure the consistency of embedding and extraction processes, the traversal order of embedding must be the same as that of extraction.
           
         - experiment result
-
+      
           - example: "lena" 1024x1024
           
           - distribution 1
@@ -189,11 +212,11 @@
               <img src="photo\2-1-32.1.900.png" alt="2-1-32.1.900" style="zoom:100%;" /><img src="photo\2-1-32.2.780.png" alt="2-1-32.2.780" style="zoom:100%;" /><img src="photo\2-1-32.3.600.png" alt="2-1-32.3.600" style="zoom:100%;" />
             
               <img src="photo\2-1-64.1.3550.png" alt="2-1-64.1.3550" style="zoom:100%;" /><img src="photo\2-1-64.2.3150.png" alt="2-1-64.2.3150" style="zoom:100%;" /><img src="photo\2-1-64.3.2500.png" alt="2-1-64.3.2500" style="zoom:100%;" />
-
       
-
+      
+      
       - method 3
-
+      
         - paper
         
           A Recursive Reversible Data Hiding in Encrypted Images Method With a Very High Payload

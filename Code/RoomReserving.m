@@ -18,10 +18,8 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
     [M,N,C] = size(origin);
     % High Capacity Reversible Data Hiding in Encrypted Image Based on Adaptive MSB Prediction
     if method == 0 
-       data = Selection( origin, blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
        %selecting the location of the first pixel in each block of embedding area 
        if type == 0
-           data = Encode(data,MSB); % change the order of the MSBs
            length = (2*edge*N+2*edge*(M-2*edge))/4;
            locatex = zeros(1,length);
            locatey = zeros(1,length);
@@ -51,10 +49,16 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
-           data = Compression((M-edge*2)*(N-edge*2)*MSB*C,data,1);
-           res = HC_RDH_V(origin, data, locatex, locatey);
+           for channel = 1 : 1 : C
+               data = Selection( origin(:,:,channel), blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
+               data = Encode(data,MSB); % change the order of the MSBs
+               data = Compression((M-edge*2)*(N-edge*2)*MSB,data,1);
+               (1024*1024-(1024-edge*2)*(1024-edge*2))*8
+               res(:,:,channel) = HC_RDH_V(origin(:,:,channel), data, locatex, locatey);
+           end
        end
        if type == 1
+           data = Selection( origin, blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
            data = Encode(data,MSB); % change the order of the MSBs
            m = M/blocksize;
            n = N/blocksize;
@@ -83,13 +87,12 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            %data hiding using the method 1
-           size(data)
            data = Compression(NUM*MSB*m*n*C,data,1);
            [~,limit] = size(data);
            data(limit+1) = '1'; % adding the ending flag
-           size(data)
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
            [~,len] = size(locate_map);
+           len
            % store each chanal's locate_map into Er in every big block
            for chanal = 1 : 1 : C
                no = 1; % index of the locate_map
