@@ -51,7 +51,7 @@
 
           - distribution 1
       
-            <img src="photo\distribution0-1.png" alt="distribution0-1" style="zoom:100%;" />
+            the same as the first distribution of the block mentioned avove.
       
           - distribution 2
       
@@ -71,7 +71,7 @@
       
             - parametric: blocksize, MSB, edge=NUM, type=0, method=0 
       
-              ![0-1-para](photo\0-1-para.png)
+              <img src="photo\0-1-para.png" alt="0-2-para" style="zoom:100%;" />
       
             - visual result
       
