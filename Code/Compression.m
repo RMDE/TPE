@@ -9,6 +9,10 @@ function res = Compression( length, data, type )
     res = [];%store the compression result, every progress result in one byte and the LSB is the type of number counted('0' or '1')
     l = 1;%index of res
     flag = 0;%means the number now to calculate is '0'
+    [~,len] = size(data);
+    if len == 0 
+        return;
+    end
     if type == 1 % the maximum number of consecutive identical bits is 127
         if data(1)=='0' || data(1)=='1'
             while i <= length

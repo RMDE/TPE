@@ -5,6 +5,8 @@
 test.*
 *.asv
 *.png
+test_*.*
+experiment/*.*
 !original.png
 !photo/*.png
 

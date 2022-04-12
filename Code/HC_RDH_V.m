@@ -40,7 +40,7 @@ function res = HC_RDH_V( origin, data, locatex, locatey)
                 continue;
             end
             md = md - 1;
-            md = Dec2bin(md,3);
+            md = dec2bin(md,3);
             bits(no:no+2) = md(1:3);
             c1 = dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
             bits(no+3:no+2+d) = c1(8-d+1:8);
@@ -64,6 +64,7 @@ function res = HC_RDH_V( origin, data, locatex, locatey)
         ori_data(25+len+l+limit) = '1';
         [~,len] = size(ori_data);
         len
+        
         if mod(len,32) ~= 0
             ori_data(len+1:ceil(len/32)*32) = tmp(1:ceil(len/32)*32-len);
         end

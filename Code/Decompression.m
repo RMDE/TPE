@@ -7,6 +7,9 @@ function res = Decompression( length, data, type )
     [~,l] = size(data);
     index = 1; %index of the data
     res = zeros(1,length);
+    if length == 0
+        return;
+    end
     count = 1; %index of the res
     if type == 1
         if data(1) == 1 || data(1) == 0

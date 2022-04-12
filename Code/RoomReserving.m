@@ -53,7 +53,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
                data = Selection( origin(:,:,channel), blocksize, MSB, NUM, type, edge ); % get all the data in the adjustment area that may change in the adjusting process
                data = Encode(data,MSB); % change the order of the MSBs
                data = Compression((M-edge*2)*(N-edge*2)*MSB,data,1);
-               (1024*1024-(1024-edge*2)*(1024-edge*2))*8
+               capacity = (M*N-(M-edge*2)*(N-edge*2))*8
                res(:,:,channel) = HC_RDH_V(origin(:,:,channel), data, locatex, locatey);
            end
        end

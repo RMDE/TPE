@@ -8,21 +8,21 @@ function [data,res] = HC_RDH_Vr( origin, locatex, locatey )
     [~,~,C] = size(origin);
     [~,len] = size(locatex);
     data = [];
-    count = 1; % index of the bits
     for chanal = 1 : 1 : C
-        count = 1;
+        count = 1; %index of bits
         bits = '';
         for index = 1 : 1 : len
-            bits(count:count+7) = Dec2bin(origin(locatex(index),locatey(index),chanal),8);
-            bits(count+8:count+15) = Dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
-            bits(count+16:count+23) = Dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
-            bits(count+24:count+31) = Dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
+            bits(count:count+7) = dec2bin(origin(locatex(index),locatey(index),chanal),8);
+            bits(count+8:count+15) = dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
+            bits(count+16:count+23) = dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
+            bits(count+24:count+31) = dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
             count = count + 32;
         end
         [~,l] = size(bits);
         for i = l : -1 : 1
             if bits(i) == '1'
                 bits = bits(1:i-1);
+                extract = i-1
                 break;
             end
         end

@@ -32,8 +32,10 @@ if type == 1
 end
 
 if type == 0 
-    m = (M - NUM*2)/blocksize;
-    n = (N - NUM*2)/blocksize;
+    height = double(M - NUM*2);
+    width = double(N - NUM*2);
+    m = floor(height/blocksize);
+    n = floor(width/blocksize);
     for chanal = 1 : 1 : C
         for i = 1 : m
             for j = 1 : n

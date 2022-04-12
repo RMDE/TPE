@@ -79,7 +79,7 @@ function sub = Adjust(origin, blocksize, MSB, NUM, value, type)
         res = round(rand(1)*(up-low))+low;
         chan(i) = res;
         diff = diff - res * number(i);
-        if diff < 0
+        if diff <= 0
             break;
         end 
     end
