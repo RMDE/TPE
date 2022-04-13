@@ -71,5 +71,5 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
         [~,l] = size(locate_map);
         locate_map(chanal,ceil(len/8)*8+1:l) = 0;
     end
-    count,limit
+    capacity = count
 end

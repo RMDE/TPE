@@ -78,7 +78,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
                end
            end
            % get the locate_map
-           locate_map = zeros(C,(blocksize-mod(NUM,blocksize))*8);
+           locate_map = zeros(C,m*n*(blocksize-mod(NUM,blocksize))*8);
            for chanal = 1 : 1 : C
                no = 1; % index of the locate_map
                for i = 1 : 1 : m

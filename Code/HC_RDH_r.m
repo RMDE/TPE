@@ -45,8 +45,9 @@ function [data,res] = HC_RDH_r(origin, locatex, locatey, locate_map)
     end
     [~,len] = size(data);
     for i = len : -1 : 1
-        if data(i) == '1'
+        if data(i) == '1' 
             data = data(1:i-1);
+            extract = i-1
             break;
         end
     end

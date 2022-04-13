@@ -90,9 +90,12 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
            data = Compression(NUM*MSB*m*n*C,data,1);
            [~,limit] = size(data);
            data(limit+1) = '1'; % adding the ending flag
+           data(limit+2) = '0';
+           len = limit
            [locate_map,res] = HC_RDH(origin, data, locatex, locatey);
            [~,len] = size(locate_map);
-           len
+           len_locatemap = len
+           cap_locatemap = m*n*(blocksize - mod(NUM,blocksize))*8
            % store each chanal's locate_map into Er in every big block
            for chanal = 1 : 1 : C
                no = 1; % index of the locate_map
