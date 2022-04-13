@@ -5,7 +5,9 @@
 %L: the length that decide whether compress continuously the same bits or not
 
 function res = BC_RDH_r( origin, blocksize, L )
-    L = 4;
+    if(~exist('L','var'))
+        L = 4;  % 如果未出现该变量，则对其进行赋值
+    end
     res = origin;
     [M,N,C] = size(origin);
     for channal = 1 : 1 : C
@@ -20,6 +22,7 @@ function res = BC_RDH_r( origin, blocksize, L )
         locate_map = Decompression(M*N,streams(M*N*8-23-len:M*N*8-24),1);
         length = bin2dec(char(streams(M*N*8-47-len:M*N*8-24-len)+'0')); % the total length of the compressed bit-planes
         streams = streams(M*N*8-47-len-length:M*N*8-48-len);
+        extract = length+len+48
         % decompression process 
         index = length; % index of the streams
         planes = zeros(M*N,8);

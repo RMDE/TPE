@@ -5,7 +5,9 @@
 %L: the length that decide whether compress continuously the same bits or not
 
 function res = BC_RDH( origin, blocksize, L )
-    L = 4;
+    if(~exist('L','var'))
+        L = 4;  % 如果未出现该变量，则对其进行赋值
+    end
     res = origin;
     % prediction for simplifing pixels
     % the first line and the first column remain unchange
@@ -152,7 +154,8 @@ function res = BC_RDH( origin, blocksize, L )
         end
         % embed the total length of the compressed bit-planes into the end of the planes 
         comp(M*N*8-47-l:M*N*8-24-l) = dec2bin(M*N*8-48-l-ci,24)-'0';
-        length = M*N*8-48-l-ci
+        capacity = M*N*8
+        length = ci
         streams = zeros(M*N,8);
         for i = 1 : 1 : 8
             streams(:,9-i) = comp((i-1)*M*N+1:i*M*N);

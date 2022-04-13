@@ -11,7 +11,9 @@
 function AjImage = Adjustment( origin, compare, blocksize, MSB, NUM, type)
 AjImage = origin;
 [M,N,C] = size(AjImage);
-    
+if type == 3
+    type = 1;
+end
 if type == 1
     m = M/blocksize;
     n = N/blocksize;

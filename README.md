@@ -121,7 +121,7 @@
       
           - example: "lena" 1024x1024
       
-          - parametric: blocksize, NUM, MSB, type=3|1, method=1
+          - parametric: blocksize, NUM, MSB, type=3, method=1
       
           - length of stored information / total room in each channel
       

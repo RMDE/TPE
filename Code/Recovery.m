@@ -115,7 +115,7 @@ function res = Recovery( origin, blocksize, MSB, NUM, method, type, edge )
            data = Decode(data(1:NUM*MSB*m*n*C),MSB);
        end
     elseif method == 1
-        ExtImage = BC_RDH_r( origin, blocksize, MSB );
+        ExtImage = BC_RDH_r( origin, blocksize );
         data = [];
     elseif method == 2
         [data,ExtImage] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge);

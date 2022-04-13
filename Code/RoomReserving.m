@@ -115,7 +115,7 @@ function res = RoomReserving( origin, blocksize, MSB, NUM, method, type, edge )
        end 
     end
     if method == 1
-        res = BC_RDH( origin, blocksize, MSB );
+        res = BC_RDH( origin, blocksize);
     end
     if method == 2
         for i = 1 : 1 : C
