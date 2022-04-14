@@ -103,7 +103,7 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
         data(l1+1:l1+l2) = bits(1:l2); % the whole information to be embedded
         [~,len] = size(locatex);
         capacity = len*(8-alpha); % caculate the embedding capacity
-        capacity,l1+l2
+        capacity,length = l1+l2
         % padding the data into length being the same as the capacity
         data (l1+l2+1) = '1';
         data(l1+l2+2:capacity) = '0';

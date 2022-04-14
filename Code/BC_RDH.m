@@ -24,11 +24,11 @@ function res = BC_RDH( origin, blocksize, L )
             else
                 % in order to improve the efficiency of compression, we make the LSB for symbol to judge whether the prediction error is >0 or not 
                 if temp < 0
-                    temp = Dec2bin(-temp,7);
+                    temp = dec2bin(-temp,7);
                     temp(8) = '1';
                     temp = bin2dec(temp);
                 else
-                    temp = Dec2bin(temp,7);
+                    temp = dec2bin(temp,7);
                     temp(8) = '0';
                     temp = bin2dec(temp);
                 end
@@ -42,11 +42,11 @@ function res = BC_RDH( origin, blocksize, L )
                 locate_map((i-1)*blocksize+1) = 1;
             else
                 if temp < 0
-                    temp = Dec2bin(-temp,7);
+                    temp = dec2bin(-temp,7);
                     temp(8) = '1';
                     temp = bin2dec(temp);
                 else
-                    temp = Dec2bin(temp,7);
+                    temp = dec2bin(temp,7);
                     temp(8) = '0';
                     temp = bin2dec(temp);
                 end
@@ -72,14 +72,14 @@ function res = BC_RDH( origin, blocksize, L )
                 temp = double(origin(i,j,chanal)) - double(pred);
                 if temp < -127 || temp > 127
                     error(i,j) = origin(i,j,chanal);
-                    locate_map((i-1)*blocksize+j) = 1;
+                    locate_map((i-1)*N+j) = 1;
                 else
                     if temp < 0
-                        temp = Dec2bin(-temp,7);
+                        temp = dec2bin(-temp,7);
                         temp(8) = '1';
                         temp = bin2dec(temp);
                     else
-                        temp = Dec2bin(temp,7);
+                        temp = dec2bin(temp,7);
                         temp(8) = '0';
                         temp = bin2dec(temp);
                     end
@@ -94,9 +94,9 @@ function res = BC_RDH( origin, blocksize, L )
         % store the locate_map
         locate_map = Compression(M*N,locate_map,1);
         [~,l] = size(locate_map);
-        comp(M*N*8-23:M*N*8) = dec2bin(l,24)-'0';
-        comp(M*N*8-23-l:M*N*8-24) = locate_map(:);
-        ci = M*N*8 - 48 - l; %index of the comp
+        comp(M*N*8-31:M*N*8) = dec2bin(l,32)-'0';
+        comp(M*N*8-31-l:M*N*8-32) = locate_map(:);
+        ci = M*N*8 - 64 - l; %index of the comp
         for i = 1 : 1 : 8
             index = 1; % index of the streams
             no = 1; % index of the temp
@@ -122,15 +122,17 @@ function res = BC_RDH( origin, blocksize, L )
                     temp(no) = 0;
                     if index+L-1 <= M*N
                         temp(no+1:no+L) = streams(index:index+L-1);
+                        index = index + L;
+                        no = no + L +1;
                     else
                         temp(no+1:no+M*N-index+1) = streams(index:M*N);
+                        no = no+M*N-index+2;
+                        index = M*N+1;
                     end
-                    index = index + L;
-                    no = no + L +1;
                 else
                     no = no - 1;
                     Lpre = floor(log2(count));
-                    Lmid = Dec2bin(count - 2^Lpre,Lpre)-'0';
+                    Lmid = dec2bin(count - 2^Lpre,Lpre)-'0';
                     temp(no+1:no+Lpre-1) = 1;
                     temp(no+Lpre) = 0;
                     temp(no+Lpre+1:no+2*Lpre) = Lmid(:);
@@ -153,9 +155,9 @@ function res = BC_RDH( origin, blocksize, L )
             end
         end
         % embed the total length of the compressed bit-planes into the end of the planes 
-        comp(M*N*8-47-l:M*N*8-24-l) = dec2bin(M*N*8-48-l-ci,24)-'0';
+        comp(M*N*8-63-l:M*N*8-32-l) = dec2bin(M*N*8-64-l-ci,32)-'0';
         capacity = M*N*8
-        length = ci
+        length = M*N*8-ci
         streams = zeros(M*N,8);
         for i = 1 : 1 : 8
             streams(:,9-i) = comp((i-1)*M*N+1:i*M*N);

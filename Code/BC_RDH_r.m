@@ -18,11 +18,11 @@ function res = BC_RDH_r( origin, blocksize, L )
                 streams((i-1)*M*N+(j-1)*N+1:(i-1)*M*N+j*N) = planes(j,1:N,9-i);
             end
         end
-        len = bin2dec(char(streams(M*N*8-23:M*N*8)+'0')); % length of the compressed locate_map
-        locate_map = Decompression(M*N,streams(M*N*8-23-len:M*N*8-24),1);
-        length = bin2dec(char(streams(M*N*8-47-len:M*N*8-24-len)+'0')); % the total length of the compressed bit-planes
-        streams = streams(M*N*8-47-len-length:M*N*8-48-len);
-        extract = length+len+48
+        len = bin2dec(char(streams(M*N*8-31:M*N*8)+'0')); % length of the compressed locate_map
+        locate_map = Decompression(M*N,streams(M*N*8-31-len:M*N*8-32),1);
+        length = bin2dec(char(streams(M*N*8-63-len:M*N*8-32-len)+'0')); % the total length of the compressed bit-planes
+        streams = streams(M*N*8-63-len-length:M*N*8-64-len);
+        extract = length+len+64
         % decompression process 
         index = length; % index of the streams
         planes = zeros(M*N,8);
@@ -37,9 +37,15 @@ function res = BC_RDH_r( origin, blocksize, L )
                 no = 1; % index of the planes(:,i)
                 while no <= M*N
                     if streams(index) == 0 % the bit-plane is not compressed
-                        planes(no:no+L-1,i) = streams(index-1:-1:index-L);
-                        no = no + L;
-                        index = index - L - 1;
+                        if no+L-1>M*N
+                            planes(no:M*N,i) = streams(index-1:-1:index-1+no-M*N);
+                            index = index - 2 + no - M*N;
+                            no = M*N+1;
+                        else
+                            planes(no:no+L-1,i) = streams(index-1:-1:index-L);
+                            no = no + L;
+                            index = index - L - 1;
+                        end
                     else
                         count = 0;
                         while streams(index)== 1
@@ -60,7 +66,7 @@ function res = BC_RDH_r( origin, blocksize, L )
         % the process of the restoring the pixels by known prediction 
         for j = 2 : 1 : N
             if locate_map(j) == 0 
-                temp = Dec2bin(res(1,j,channal),8);
+                temp = dec2bin(res(1,j,channal),8);
                 if temp(8) == '1' % the error is negative
                     res(1,j,channal) = res(1,j-1,channal) - bin2dec(temp(1:7));
                 else
@@ -69,8 +75,8 @@ function res = BC_RDH_r( origin, blocksize, L )
             end
         end
         for i = 2 : 1 : M
-            if locate_map((i-1)*blocksize+1) == 0 
-                temp = Dec2bin(res(i,1,channal),8);
+            if locate_map((i-1)*N+1) == 0 
+                temp = dec2bin(res(i,1,channal),8);
                 if temp(8) == '1' % the error is negative
                     res(i,1,channal) = res(i-1,1,channal) - bin2dec(temp(1:7));
                 else
@@ -80,7 +86,7 @@ function res = BC_RDH_r( origin, blocksize, L )
         end
         for i = 2 : 1 : M
             for j = 2 : 1 : N
-                if locate_map((i-1)*blocksize+j) == 0 
+                if locate_map((i-1)*N+j) == 0 
                     min = res(i-1,j,channal);
                     max = res(i,j-1,channal);
                     if min > res(i,j-1,channal)
@@ -94,7 +100,7 @@ function res = BC_RDH_r( origin, blocksize, L )
                     else
                         pred = double(res(i-1,j,channal)) + double(res(i,j-1,channal)) - double(res(i-1,j-1,channal));
                     end
-                    temp = Dec2bin(res(i,j,channal),8);
+                    temp = dec2bin(res(i,j,channal),8);
                     if temp(8) == '1' % the error is negative
                         res(i,j,channal) = pred - bin2dec(temp(1:7));
                     else
