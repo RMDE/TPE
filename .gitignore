@@ -7,6 +7,7 @@ test.*
 *.png
 test_*.*
 experiment/*.*
+latex/*.*
 !original.png
 !photo/*.png
 
