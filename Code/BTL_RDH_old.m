@@ -25,46 +25,37 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
         locatex = [];
         locatey = [];
         bits = [];
-        origin_c = origin(:,:,channel);
         if type == 0
             for i = 2 : M
-                x0 = origin_c(i,1);x1 = origin_c(i-1,1);x2 = 0;x3 = 0;x4 = 0;x5 = 0;x6 = 0;
-                [locatex,locatey,bits,res(i,1,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,1,0,beta,labels,locatex,locatey,bits);
+                [locatex,locatey,bits,res(i,1,channel)] = Prediction(origin(:,:,channel),i,1,0,beta,labels,locatex,locatey,bits);
             end
             for j = 2 : N
-                x0 = origin_c(1,j);x1 = 0;x2 = 0;x3 = origin_c(1,j-1);x4 = 0;x5 = 0;x6 = 0;
-                [locatex,locatey,bits,res(1,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,1,j,2,beta,labels,locatex,locatey,bits);
+                [locatex,locatey,bits,res(1,j,channel)] = Prediction(origin(:,:,channel),1,j,2,beta,labels,locatex,locatey,bits);
             end
             for i = 2 : M
                 for j = 2 : edge
-                    x0 = origin_c(i,j);x1 = origin_c(i-1,j);x2 = 0;x3 = origin_c(i,j-1);x4 = 0;x5 = origin_c(i-1,j-1);x6 = 0;
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,j,4,beta,labels,locatex,locatey,bits);
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
             for i = 2 : edge
                 for j = edge+1 : N-edge+1
-                    x0 = origin_c(i,j);x1 = origin_c(i-1,j);x2 = 0;x3 = origin_c(i,j-1);x4 = 0;x5 = origin_c(i-1,j-1);x6 = 0;
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,j,4,beta,labels,locatex,locatey,bits);
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
             for j = edge+1 : N-edge
-                x0 = origin_c(M-edge+1,j);x1 = 0;x2 = 0;x3 = origin_c(M-edge+1,j-1);x4 = 0;x5 = 0;x6 = 0;
-                [locatex,locatey,bits,res(M-edge+1,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,M-edge+1,j,2,beta,labels,locatex,locatey,bits);
+                [locatex,locatey,bits,res(M-edge+1,j,channel)] = Prediction(origin(:,:,channel),M-edge+1,j,2,beta,labels,locatex,locatey,bits);
             end
             for i = edge+1 : M-edge+1
-                x0 = origin_c(i,N-edge+1);x1 = origin_c(i-1,N-edge+1);x2 = 0;x3 = 0;x4 = 0;x5 = 0;x6 = 0;
-                [locatex,locatey,bits,res(i,N-edge+1,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,N-edge+1,0,beta,labels,locatex,locatey,bits);
+                [locatex,locatey,bits,res(i,N-edge+1,channel)] = Prediction(origin(:,:,channel),i,N-edge+1,0,beta,labels,locatex,locatey,bits);
             end
             for i = M-edge+2 : M
                 for j = edge+1 : N-edge+1
-                    x0 = origin_c(i,j);x1 = origin_c(i-1,j);x2 = 0;x3 = origin_c(i,j-1);x4 = 0;x5 = origin_c(i-1,j-1);x6 = 0;
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,j,4,beta,labels,locatex,locatey,bits);
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
             for i = 2 : M
                 for j = N-edge+2 : N
-                    x0 = origin_c(i,j);x1 = origin_c(i-1,j);x2 = 0;x3 = origin_c(i,j-1);x4 = 0;x5 = origin_c(i-1,j-1);x6 = 0;
-                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,j,4,beta,labels,locatex,locatey,bits);
+                    [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,4,beta,labels,locatex,locatey,bits);
                 end
             end
         elseif type == 1
@@ -82,12 +73,10 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
                         a = x - blocksize + ceil(NUM/blocksize);
                     end
                     for i = x-1 : -1 : a
-                         x0 = origin_c(i,y);x1 = 0;x2 = origin_c(i+1,y);x3 = 0;x4 = 0;x5 = 0;x6 = 0;
-                        [locatex,locatey,bits,res(i,y,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,y,1,beta,labels,locatex,locatey,bits);
+                        [locatex,locatey,bits,res(i,y,channel)] = Prediction(origin(:,:,channel),i,y,1,beta,labels,locatex,locatey,bits);
                     end
                     for j = y-1 : -1 : y-blocksize+1
-                        x0 = origin_c(x,j);x1 = 0;x2 = 0;x3 = 0;x4 = origin_c(x,j+1);x5 = 0;x6 = 0;
-                        [locatex,locatey,bits,res(x,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,x,j,3,beta,labels,locatex,locatey,bits);
+                        [locatex,locatey,bits,res(x,j,channel)] = Prediction(origin(:,:,channel),x,j,3,beta,labels,locatex,locatey,bits);
                     end
                     % the common condition
                     count = 2*blocksize-floor(NUM/blocksize);
@@ -99,8 +88,7 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
                             if count > blocksize*blocksize-NUM
                                 break;
                             end
-                            x0 = origin_c(i,j);x1 = 0;x2 = origin_c(i+1,j);x3 = 0;x4 = origin_c(i,j+1);x5 = 0;x6 = origin_c(i+1,j+1);
-                            [locatex,locatey,bits,res(i,j,channel)] = Prediction(x0,x1,x2,x3,x4,x5,x6,i,j,5,beta,labels,locatex,locatey,bits);
+                            [locatex,locatey,bits,res(i,j,channel)] = Prediction(origin(:,:,channel),i,j,5,beta,labels,locatex,locatey,bits);
                             count = count + 1;
                         end
                     end
@@ -129,52 +117,46 @@ function res = BTL_RDH( origin, blocksize, type, MSB, NUM, edge, data)
         end
     end
 end
-function [locatex, locatey, bits, res] = Prediction(x0,x1,x2,x3,x4,x5,x6, x, y, type, beta, labels, locatex, locatey, bits)
-    x0_d = double(x0);
-    x1_d = double(x1);
-    x2_d = double(x2);
-    x3_d = double(x3);
-    x4_d = double(x4);
-    x5_d = double(x5);
-    x6_d = double(x6);
+
+function [locatex, locatey, bits, res] = Prediction(origin, x, y, type, beta, labels, locatex, locatey, bits)
     if type == 0 % x-1 -> x
-        error = x0_d - x1_d;
+        error = double(origin(x,y)) - double(origin(x-1,y));
     elseif type == 1 % x+1 -> x
-        error = x0_d - x2_d;
+        error = double(origin(x,y)) - double(origin(x+1,y));
     elseif type == 2 % y-1 -> y
-        error = x0_d - x3_d;
+        error = double(origin(x,y)) - double(origin(x,y-1));
     elseif type == 3 % y+1 -> y
-        error = x0_d - x4_d;
+        error = double(origin(x,y)) - double(origin(x,y+1));
     elseif type == 4
-        min = x1;
-        max = x3;
-        if min > x3
-            min = x3;
-            max = x1;
+        min = origin(x-1,y);
+        max = origin(x,y-1);
+        if min > origin(x,y-1)
+            min = origin(x,y-1);
+            max = origin(x-1,y);
         end
-        if x5 < min
+        if origin(x-1,y-1) < min
             pred = max;
-        elseif x5 > max
+        elseif origin(x-1,y-1) > max
             pred = min;
         else
-            pred = x1_d + x3_d - x5_d;
+            pred = double(origin(x-1,y)) + double(origin(x,y-1)) - double(origin(x-1,y-1));
         end
-        error = x0_d - double(pred);  
+        error = double(origin(x,y)) - double(pred);  
     elseif type == 5
-        min = x2;
-        max = x4;
-        if min > x4
-            min = x4;
-            max = x2;
+        min = origin(x+1,y);
+        max = origin(x,y+1);
+        if min > origin(x,y+1)
+            min = origin(x,y+1);
+            max = origin(x+1,y);
         end
-        if x6 < min
+        if origin(x+1,y+1) < min
             pred = max;
-        elseif x6 > max
+        elseif origin(x+1,y+1) > max
             pred = min;
         else
-            pred = x2_d + x4_d - x6_d;
+            pred = double(origin(x+1,y)) + double(origin(x,y+1)) - double(origin(x+1,y+1));
         end
-        error = x0_d - double(pred);
+        error = double(origin(x,y)) - double(pred);
     end
     [range,alpha] = size(labels);
     if ceil(-range/2) <= error && error <= floor((range-1)/2)
@@ -188,11 +170,9 @@ function [locatex, locatey, bits, res] = Prediction(x0,x1,x2,x3,x4,x5,x6, x, y, 
         locatey(no+1) = y;
     else
         [~,l] = size(bits);
-        tmp = Dec2bin(x0,8);
+        tmp = Dec2bin(origin(x,y),8);
         bits(l+1:l+beta) = tmp(1:beta);
         tmp(1:beta) = '0';
         res = bin2dec(tmp);
     end  
 end
-
-

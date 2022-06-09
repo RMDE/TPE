@@ -10,4 +10,5 @@ experiment/*.*
 latex/*.*
 !original.png
 !photo/*.png
-
+Latex/*.*
+Latex/

@@ -3,19 +3,23 @@
 %origin: the image after decryption process
 %locatex & locatey: the location of first pixel in embedding block
 % locate_map: record whether the cooresponding block has embedded extra data
-function [data,res] = HC_RDH_Vr( origin, locatex, locatey )
-    res = origin;
+function [data,result] = HC_RDH_Vr( origin, locatex, locatey )
+    result = origin;
     [~,~,C] = size(origin);
     [~,len] = size(locatex);
     data = [];
     for chanal = 1 : 1 : C
+        ori = origin(:,:,chanal);
+        res = ori;
         count = 1; %index of bits
         bits = '';
         for index = 1 : 1 : len
-            bits(count:count+7) = dec2bin(origin(locatex(index),locatey(index),chanal),8);
-            bits(count+8:count+15) = dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
-            bits(count+16:count+23) = dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
-            bits(count+24:count+31) = dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
+            x = locatex(index);
+            y = locatey(index);
+            bits(count:count+7) = dec2bin(ori(x,y),8);
+            bits(count+8:count+15) = dec2bin(ori(x,y+1),8);
+            bits(count+16:count+23) = dec2bin(ori(x+1,y),8);
+            bits(count+24:count+31) = dec2bin(ori(x+1,y+1),8);
             count = count + 32;
         end
         [~,l] = size(bits);
@@ -30,28 +34,31 @@ function [data,res] = HC_RDH_Vr( origin, locatex, locatey )
         locate_map = Decompression(len,bits(25:24+length),0);
         count = 25+length; % index of prediction result
         for index = 1 : 1 : len
+            x = locatex(index);
+            y = locatey(index);
             if locate_map(index) == '1'
-                res(locatex(index),locatey(index),chanal) = bin2dec(bits(count:count+7));
-                res(locatex(index),locatey(index)+1,chanal) = bin2dec(bits(count+8:count+15));
-                res(locatex(index)+1,locatey(index),chanal) = bin2dec(bits(count+16:count+23));
-                res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(bits(count+24:count+31));
+                res(x,y) = bin2dec(bits(count:count+7));
+                res(x,y+1) = bin2dec(bits(count+8:count+15));
+                res(x+1,y) = bin2dec(bits(count+16:count+23));
+                res(x+1,y+1) = bin2dec(bits(count+24:count+31));
                 count = count + 32;
             else
                 pred = bits(count:count+7);
                 md = bin2dec(bits(count+8:count+10)) + 1;
                 d = 8 - md;
-                res(locatex(index),locatey(index),chanal) = bin2dec(pred);
+                res(x,y) = bin2dec(pred);
                 pred(md+1:8) = bits(count+11:count+10+d);
-                res(locatex(index),locatey(index)+1,chanal) = bin2dec(pred);
+                res(x,y+1) = bin2dec(pred);
                 pred(md+1:8) = bits(count+11+d:count+10+2*d);
-                res(locatex(index)+1,locatey(index),chanal) = bin2dec(pred);
+                res(x+1,y) = bin2dec(pred);
                 pred(md+1:8) = bits(count+11+2*d:count+10+3*d);
-                res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(pred);
+                res(x+1,y+1) = bin2dec(pred);
                 count = count + 8 + 3 + 3*(8-md);
             end 
         end
         [~,l1] = size(bits);
         [~,l2] = size(data);
         data(l2+1:l1-count+l2+1) = bits(count:l1);
+        result(:,:,chanal) = res(:,:);
     end
 end

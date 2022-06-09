@@ -156,8 +156,9 @@ function res = BC_RDH( origin, blocksize, L )
         end
         % embed the total length of the compressed bit-planes into the end of the planes 
         comp(M*N*8-63-l:M*N*8-32-l) = dec2bin(M*N*8-64-l-ci,32)-'0';
-        capacity = M*N*8
-        length = M*N*8-ci
+        capacity = M*N*8;
+        length = M*N*8-ci;
+        ci/capacity*8
         streams = zeros(M*N,8);
         for i = 1 : 1 : 8
             streams(:,9-i) = comp((i-1)*M*N+1:i*M*N);

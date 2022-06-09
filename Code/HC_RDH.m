@@ -4,8 +4,8 @@
 %data: the data to be embeded
 %locatex & locatey: the location of first pixel in embedding block
 
-function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
-    res = origin;
+function [locate_map, result] = HC_RDH( origin, data, locatex, locatey)
+    result = origin;
     tmp = '000000000000000000000';
     [~,number] = size(locatex);
     [~,~,C] = size(origin);
@@ -13,12 +13,19 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
     [~,limit] = size(data);
     count = uint32(1); %record the index of the data to be embedded
     for chanal = 1 : 1 : C
+        ori = origin(:,:,chanal);
+        res = ori;
         for index = 1 : 1 : number
             % the first pixel value of each block for prediction
-            pred = origin(locatex(index),locatey(index),chanal);
-            d1 = Diff(pred,origin(locatex(index),locatey(index)+1,chanal));
-            d2 = Diff(pred,origin(locatex(index)+1,locatey(index),chanal));
-            d3 = Diff(pred,origin(locatex(index)+1,locatey(index)+1,chanal));
+            x = locatex(index);
+            y = locatey(index);
+            c1 = ori(x,y+1);
+            c2 = ori(x+1,y);
+            c3 = ori(x+1,y+1);
+            pred = ori(x,y);
+            d1 = Diff(pred,c1);
+            d2 = Diff(pred,c2);
+            d3 = Diff(pred,c3);
             d = d1;
             if d2 > d
                 d = d2;
@@ -36,11 +43,11 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
             md = md - 1;
             md = Dec2bin(md,3);
             bits(1:3) = md(1:3);
-            c1 = Dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
+            c1 = Dec2bin(c1,8);
             bits(4:3+d) = c1(8-d+1:8);
-            c2 = Dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
+            c2 = Dec2bin(c2,8);
             bits(4+d:3+2*d) = c2(8-d+1:8);
-            c3 = Dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
+            c3 = Dec2bin(c3,8);
             bits(4+2*d:3+3*d) = c3(8-d+1:8);
             if d < 7
                 % all the data has been embedded
@@ -55,10 +62,11 @@ function [locate_map, res] = HC_RDH( origin, data, locatex, locatey)
                 end
                 count = count + 20-3*d + 1;
             end
-            res(locatex(index),locatey(index)+1,chanal) = bin2dec(bits(1:8));
-            res(locatex(index)+1,locatey(index),chanal) = bin2dec(bits(9:16));
-            res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(bits(17:24));
+            res(x,y+1) = bin2dec(bits(1:8));
+            res(x+1,y) = bin2dec(bits(9:16));
+            res(x+1,y+1) = bin2dec(bits(17:24));
         end
+        result(:,:,chanal) = res(:,:);
         % compress the locate_map of each chanal respectively
         map = Compression(number,locate_map(chanal,1:number),0);
         [~,len] = size(map);

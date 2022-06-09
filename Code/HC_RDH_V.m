@@ -4,24 +4,31 @@
 %data: the data to be embeded
 %locatex & locatey: the location of first pixel in embedding block
 
-function res = HC_RDH_V( origin, data, locatex, locatey)
-    res = origin;
+function result = HC_RDH_V( origin, data, locatex, locatey)
+    result = origin;
     tmp = '00000000000000000000000000000000';
     [~,number] = size(locatex);
     [~,~,C] = size(origin);
     locate_map = zeros(1,number);
     [~,limit] = size(data);
     for chanal = 1 : 1 : C
+        ori = origin(:,:,chanal);
+        res = ori;
         no = 1; % index of the bits
         bits = '0';
         for index = 1 : 1 : number
             % the first pixel value of each block for prediction
-            pred = origin(locatex(index),locatey(index),chanal);
+            x = locatex(index);
+            y = locatey(index);
+            pred = ori(x,y);
             bits(no:no+7) = dec2bin(pred,8);
             no = no + 8;
-            d1 = Diff(pred,origin(locatex(index),locatey(index)+1,chanal));
-            d2 = Diff(pred,origin(locatex(index)+1,locatey(index),chanal));
-            d3 = Diff(pred,origin(locatex(index)+1,locatey(index)+1,chanal));
+            c1 = ori(x,y+1);
+            c2 = ori(x+1,y);
+            c3 = ori(x+1,y+1);
+            d1 = Diff(pred,c1);
+            d2 = Diff(pred,c2);
+            d3 = Diff(pred,c3);
             d = d1;
             if d2 > d
                 d = d2;
@@ -33,20 +40,20 @@ function res = HC_RDH_V( origin, data, locatex, locatey)
             % if md = 1, there is no extra space to store the embedding data
             if md == 0
                 locate_map(index) = 1;
-                bits(no:no+7) = dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
-                bits(no+8:no+15) = dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
-                bits(no+16:no+23) = dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
+                bits(no:no+7) = dec2bin(c1,8);
+                bits(no+8:no+15) = dec2bin(c2,8);
+                bits(no+16:no+23) = dec2bin(c3,8);
                 no = no + 24;
                 continue;
             end
             md = md - 1;
             md = dec2bin(md,3);
             bits(no:no+2) = md(1:3);
-            c1 = dec2bin(origin(locatex(index),locatey(index)+1,chanal),8);
+            c1 = dec2bin(c1,8);
             bits(no+3:no+2+d) = c1(8-d+1:8);
-            c2 = dec2bin(origin(locatex(index)+1,locatey(index),chanal),8);
+            c2 = dec2bin(c2,8);
             bits(no+3+d:no+2+2*d) = c2(8-d+1:8);
-            c3 = dec2bin(origin(locatex(index)+1,locatey(index)+1,chanal),8);
+            c3 = dec2bin(c3,8);
             bits(no+3+2*d:no+2+3*d) = c3(8-d+1:8);
             no = no + 3 + 3*d;
         end
@@ -71,18 +78,21 @@ function res = HC_RDH_V( origin, data, locatex, locatey)
         [~,len] = size(ori_data);
         no = 1; % index of the ori_data
         for index = 1 : 1 : number
+            x = locatex(index);
+            y = locatey(index);
             if no > len
-                res(locatex(index),locatey(index),chanal) = 0;
-                res(locatex(index),locatey(index)+1,chanal) = 0;
-                res(locatex(index)+1,locatey(index),chanal) = 0;
-                res(locatex(index)+1,locatey(index)+1,chanal) = 0;
+                res(x,y) = 0;
+                res(x,y+1) = 0;
+                res(x+1,y) = 0;
+                res(x+1,y+1) = 0;
                 continue;
             end
-            res(locatex(index),locatey(index),chanal) = bin2dec(ori_data(no:no+7));
-            res(locatex(index),locatey(index)+1,chanal) = bin2dec(ori_data(no+8:no+15));
-            res(locatex(index)+1,locatey(index),chanal) = bin2dec(ori_data(no+16:no+23));
-            res(locatex(index)+1,locatey(index)+1,chanal) = bin2dec(ori_data(no+24:no+31));
+            res(x,y) = bin2dec(ori_data(no:no+7));
+            res(x,y+1) = bin2dec(ori_data(no+8:no+15));
+            res(x+1,y) = bin2dec(ori_data(no+16:no+23));
+            res(x+1,y+1) = bin2dec(ori_data(no+24:no+31));
             no = no + 32;
         end
+        result(:,:,chanal) = res(:,:);
     end
 end

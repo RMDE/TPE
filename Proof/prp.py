@@ -1,15 +1,17 @@
 from math import *
 
-b = 3
+b = 8
+SUM = 28
+rho = 3
 # calculate the number of low k bits distribution while keeping the sum being s. 
 def Vai(s, k):
     if k == 1:
         return 1
     dep = int(pow(2, k-1))
-    low = int(s - pow(2, k-1) * (4*b-4))
+    low = int(s - pow(2, k-1) * SUM)
     if low < dep:
         low = s%dep
-    up = int((pow(2,k-1) - 1) * (4*b-4))
+    up = int((pow(2,k-1) - 1) * SUM)
     if up > s:
         up = s
     count = 0;
@@ -24,8 +26,9 @@ def Cai(s, k):
     s = s >> (8-k)
     return Vai(s, k)
 
+
 def Conf(s):
-    limit = 4 * b - 4 + 1
+    limit = SUM + 1
     count = 0
     for i in range(limit):
         for j in range(limit):
@@ -41,11 +44,11 @@ def Calcu(s, rho):
     tmp = 0
     for i in range(8-rho,8):
         tmp += int(pow(2,i))
-    low = s - tmp*(4*b-4)
+    low = s - tmp*SUM
     dep = int(pow(2,8-rho))
     if low < dep:
         low = s%dep
-    up = int((pow(2,8-rho)-1)*(4*b-4))
+    up = int((pow(2,8-rho)-1)*SUM)
     if up > s:
         up = s
     count = 0
@@ -53,8 +56,8 @@ def Calcu(s, rho):
         count += Vai(i, 8-rho)*Cai(s-i, rho)
     return count
 
-for rho in range(1,8):
-    for i in range(255*(4*b-4)+1):
+for SUM in range(1,b*b):
+    for i in range(255*SUM+1):
         res1 = Calcu(i,rho)
         res2 = Vai(i,8)
         if res1 != res2:

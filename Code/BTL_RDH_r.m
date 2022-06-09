@@ -25,6 +25,7 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
         locatex = []; % record the location of pixels in embedding area 
         locatey = [];
         bits = []; %  store the high beta bits of pixels belong to Pn for recovery
+        res_c = res(:,:,channel);
         if type == 0
             length = (M-edge*2) * (N-edge*2) * MSB; % the length of the uncompressed information for recovering the adjustment area
             % select the locations of the pixels in adjustment area by recovery order
@@ -81,35 +82,43 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
             % recovering high beta bits of pixels with beta labels
             no = length+1; % index of the bits
             for i = 2 : M
-                [no,res(i,1,channel)] = Reduction(res(:,:,channel), i, 1, 0, beta, labels, bits, no);
+                x0 = res_c(i,1);x1 = res_c(i-1,1);x2 = 0;x3 = 0;x4 = 0;x5 = 0;x6 = 0;
+                [no,res_c(i,1)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 0, beta, labels, bits, no);
             end
             for j = 2 : N
-                [no,res(1,j,channel)] = Reduction(res(:,:,channel), 1, j, 2, beta, labels, bits, no);
+                x0 = res_c(1,j);x1 = 0;x2 = 0;x3 = res_c(1,j-1);x4 = 0;x5 = 0;x6 = 0;
+                [no,res_c(1,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 2, beta, labels, bits, no);
             end
             for i = 2 : M
                 for j = 2 : edge
-                    [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 4, beta, labels, bits, no);
+                    x0 = res_c(i,j);x1 = res_c(i-1,j);x2 = 0;x3 = res_c(i,j-1);x4 = 0;x5 = res_c(i-1,j-1);x6 = 0;
+                    [no,res_c(i,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 4, beta, labels, bits, no);
                 end
             end
             for i = 2 : edge
                 for j = edge+1 : N-edge+1
-                    [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 4, beta, labels, bits, no);
+                    x0 = res_c(i,j);x1 = res_c(i-1,j);x2 = 0;x3 = res_c(i,j-1);x4 = 0;x5 = res_c(i-1,j-1);x6 = 0;
+                    [no,res_c(i,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 4, beta, labels, bits, no);
                 end
             end
             for j = edge+1 : N-edge
-                [no,res(M-edge+1,j,channel)] = Reduction(res(:,:,channel), M-edge+1, j, 2, beta, labels, bits, no);
+                x0 = res_c(M-edge+1,j);x1 = 0;x2 = 0;x3 = res_c(M-edge+1,j-1);x4 = 0;x5 = 0;x6 = 0;
+                [no,res_c(M-edge+1,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 2, beta, labels, bits, no);
             end
             for i = edge+1 : M-edge+1
-                [no,res(i,N-edge+1,channel)] = Reduction(res(:,:,channel), i, N-edge+1, 0, beta, labels, bits, no);
+                x0 = res_c(i,N-edge+1);x1 = res_c(i-1,N-edge+1);x2 = 0;x3 = 0;x4 = 0;x5 = 0;x6 = 0;
+                [no,res_c(i,N-edge+1)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 0, beta, labels, bits, no);
             end
             for i = M-edge+2 : M
                 for j = edge+1 : N-edge+1
-                    [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 4, beta, labels, bits, no);
+                    x0 = res_c(i,j);x1 = res_c(i-1,j);x2 = 0;x3 = res_c(i,j-1);x4 = 0;x5 = res_c(i-1,j-1);x6 = 0;
+                    [no,res_c(i,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 4, beta, labels, bits, no);
                 end
             end
             for i = 2 : M
                 for j = N-edge+2 : N
-                    [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 4, beta, labels, bits, no);
+                    x0 = res_c(i,j);x1 = res_c(i-1,j);x2 = 0;x3 = res_c(i,j-1);x4 = 0;x5 = res_c(i-1,j-1);x6 = 0;
+                    [no,res_c(i,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 4, beta, labels, bits, no);
                 end
             end
         elseif type == 1
@@ -187,10 +196,12 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                         a = x - blocksize + ceil(NUM/blocksize);
                     end
                     for i = x-1 : -1 : a
-                        [no,res(i,y,channel)] = Reduction(res(:,:,channel), i, y, 1, beta, labels, bits, no);
+                        x0 = res_c(i,y);x1 = 0;x2 = res_c(i+1,y);x3 = 0;x4 = 0;x5 = 0;x6 = 0;
+                        [no,res_c(i,y)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 1, beta, labels, bits, no);
                     end
                     for j = y-1 : -1 : y-blocksize+1
-                        [no,res(x,j,channel)] = Reduction(res(:,:,channel), x, j, 3, beta, labels, bits, no);
+                        x0 = res_c(x,j);x1 = 0;x2 = 0;x3 = 0;x4 = res_c(x,j+1);x5 = 0;x6 = 0;
+                        [no,res_c(x,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 3, beta, labels, bits, no);
                     end
                     % the common condition
                     count = 2*blocksize-floor(NUM/blocksize);
@@ -202,22 +213,30 @@ function [datas,res] = BTL_RDH_r( origin, blocksize, type, MSB, NUM, edge)
                             if count > blocksize*blocksize-NUM
                                 break;
                             end
-                            [no,res(i,j,channel)] = Reduction(res(:,:,channel), i, j, 5, beta, labels, bits, no);
+                            x0 = res_c(i,j);x1 = 0;x2 = res_c(i+1,j);x3 = 0;x4 = res_c(i,j+1);x5 = 0;x6 = res_c(i+1,j+1);
+                            [no,res_c(i,j)] = Reduction(x0,x1,x2,x3,x4,x5,x6, 5, beta, labels, bits, no);
                             count = count + 1;
                         end
                     end
                 end
             end
         end
+        res(:,:,channel) = res_c;
         [~,l] = size(datas);
         datas(l+1:l+length) = data(1:length);
     end
 end
 
-function [no,res] = Reduction(origin, x, y, type, beta, labels, bits, no)
-    res = origin(x,y);
+function [no,res] = Reduction(x0,x1,x2,x3,x4,x5,x6, type, beta, labels, bits, no)
+    x1_d = double(x1);
+    x2_d = double(x2);
+    x3_d = double(x3);
+    x4_d = double(x4);
+    x5_d = double(x5);
+    x6_d = double(x6);
+    res = x0;
     [range,alpha] = size(labels);
-    bin = Dec2bin(origin(x,y),8);
+    bin = Dec2bin(x0,8);
     com(1:beta) = '0';
     if strcmp(bin(1:beta),com(1:beta)) == 1
         bin(1:beta) = bits(no:no+beta-1);
@@ -226,41 +245,41 @@ function [no,res] = Reduction(origin, x, y, type, beta, labels, bits, no)
     else
         error = double(bin2dec(bin(1:alpha))) - double(bin2dec(labels(1,:))) + double(ceil(-range/2));
         if type == 0 % x-1 -> x
-            res = double(origin(x-1,y)) + error;
+            res = x1_d + error;
         elseif type == 1 % x+1 -> x
-            res = double(origin(x+1,y)) + error;
+            res = x2_d + error;
         elseif type == 2 % y-1 -> y
-            res = double(origin(x,y-1)) + error;
+            res = x3_d + error;
         elseif type == 3 % y+1 -> y
-            res = double(origin(x,y+1)) + error;
+            res = x4_d + error;
         elseif type == 4
-            min = origin(x-1,y);
-            max = origin(x,y-1);
-            if min > origin(x,y-1)
-                min = origin(x,y-1);
-                max = origin(x-1,y);
+            min = x1;
+            max = x3;
+            if min > x3
+                min = x3;
+                max = x1;
             end
-            if origin(x-1,y-1) < min
+            if x5 < min
                 pred = max;
-            elseif origin(x-1,y-1) > max
+            elseif x5 > max
                 pred = min;
             else
-                pred = double(origin(x-1,y)) + double(origin(x,y-1)) - double(origin(x-1,y-1));
+                pred = x1_d + x3_d - x5_d;
             end
             res = double(pred) + error;  
         elseif type == 5
-            min = origin(x+1,y);
-            max = origin(x,y+1);
-            if min > origin(x,y+1)
-                min = origin(x,y+1);
-                max = origin(x+1,y);
+            min = x2;
+            max = x4;
+            if min > x4
+                min = x4;
+                max = x2;
             end
-            if origin(x+1,y+1) < min
+            if x6 < min
                 pred = max;
-            elseif origin(x+1,y+1) > max
+            elseif x6 > max
                 pred = min;
             else
-                pred = double(origin(x+1,y)) + double(origin(x,y+1)) - double(origin(x+1,y+1));
+                pred = x2_d + x4_d - x6_d;
             end
             res = double(pred) + error;
         end
