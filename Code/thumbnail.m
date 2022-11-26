@@ -144,33 +144,41 @@
 % end
 % level = level/60.0
 % level2 = level2/60.0
-
-whole = imread("result.png","png");
-[M,N,C] = size(whole);
-blocksize =8;
-MSB = 1;
-count = 20000;
-key = 1;
-m = M/blocksize;
-n = N/blocksize;
-values = zeros(m,n);%store the original average pixel of every block
-sub1 = zeros(blocksize);
-sub2 = zeros(blocksize);
-result1 = whole;
-for chanal = 1:C
-for i = 1 : m
-        for j = 1 : n
-            x = (i-1)*blocksize+1;
-            y = (j-1)*blocksize+1;
-            sub1(1:blocksize,1:blocksize) = whole(x:x+blocksize-1,y:y+blocksize-1,chanal);
-            value1 = mean2(sub1);
-            for p = x : x+blocksize-1
-                for q = y : y+blocksize-1
-                    result1(p,q,chanal) = value1;
+clear;
+% folder = dir("D:\Project\TPE\experiment\Corel5K\Bear\");
+blocksizes = [64,8,8,8,16,16,16,32,32,32,64,64];
+for ff = 1 : 60
+PATH2 = strcat("D:\Project\TPE\experiment\Corel5K\Jing\",int2str(ff),"\");
+PATH1 = strcat("D:\Project\TPE\experiment\Corel5K\Jing\",int2str(ff),"\");
+flag = 0;
+for no = 1 :1: 900
+    file = strcat(PATH1,int2str(no),".png");
+    whole = imread(file,"png");
+    [M,N,C] = size(whole);
+    blocksize = blocksizes(mod(ff,12)+1);
+    m = M/blocksize;
+    n = N/blocksize;
+    values = zeros(m,n);%store the original average pixel of every block
+    sub1 = zeros(blocksize);
+    sub2 = zeros(blocksize);
+    result1 = whole;
+    for chanal = 1:C
+    for i = 1 : m
+            for j = 1 : n
+                x = (i-1)*blocksize+1;
+                y = (j-1)*blocksize+1;
+                sub1(1:blocksize,1:blocksize) = whole(x:x+blocksize-1,y:y+blocksize-1,chanal);
+                value1 = mean2(sub1);
+                for p = x : x+blocksize-1
+                    for q = y : y+blocksize-1
+                        result1(p,q,chanal) = value1;
+                    end
                 end
-            end
-        end 
+            end 
+    end
+    end
+    file = strcat(PATH2,int2str(no+900),".png");
+    imwrite(result1,file,"png");
 end
 end
-imwrite(result1,"thumbnail.png","png");
 % imwrite(result1,"ave.png","png");

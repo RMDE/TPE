@@ -11,8 +11,8 @@ function PmImage = Permutation(origin, blocksize, key, edge, kind)
     rng(key);
     PmImage = origin;
     [M,N,C] = size(origin); 
-    m = floor((M - edge*2)/blocksize);
-    n = floor((N - edge*2)/blocksize);
+    m = floor(double((M - edge*2))/blocksize);
+    n = floor(double((N - edge*2))/blocksize);
     keys = uint8(randi(LIMIT,m,n));
     for chanal = 1 : 1 : C
         for i = 1 : m

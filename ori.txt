@@ -1,0 +1,922 @@
+\documentclass[10pt,journal,final]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{CJK}
+\usepackage{tipa}
+\usepackage{amsmath}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\graphicspath{{figure/}}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{stfloats}
+\usepackage{multicol}
+\usepackage{amsthm,amsmath,amssymb}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage[normalem]{ulem} 
+%\usepackage{flushend}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage[ruled]{algorithm2e}
+\usepackage{color}
+\usepackage{soul}
+\usepackage{subfigure}
+\usepackage{makecell}
+
+\begin{document}
+
+\title{A Reversible Framework for Visual Privacy Protection by Thumbnail Preserving Based on Data Hiding}
+
+\author{Xi Ye
+
+
+%%感谢    
+%\thanks{$^\ast$Corresponding author: Yushu Zhang (E-mail: yushu@nuaa.edu.cn).}
+\thanks{X. Ye is with the College of Computer Science and Technology, Nanjing University of Aeronautics and Astronautics, Nanjing 211106, China. (E-mail: rmde\_f@nuaa.edu.cn).}
+}
+
+\maketitle
+
+\begin{abstract}
+The number of images produced by people everyday is rapidly increasing and their local storage space may be not big enough for storing all these images.
+As a result, people are currently accustomed to uploading images to cloud platforms, which raises privacy concerns.
+Traditional image encryption is a way to protect image privacy without preserving any usability, so that people fail to conveniently browse and manage their images stored in the cloud.
+Hence some visual privacy protection schemes were proposed to balance image privacy and usability, while many of them are irreversible.
+Consequently, a novel reversible technology, called thumbnail-preserving encryption (TPE), has been studied.
+However, existing TPE schemes are either inefficient, or cannot perfectly restore the original image and achieve nonce-respecting (NR) security at the same time. 
+%However, most existing approximate TPE schemes either cannot restore the original image perfectly or do not achieve nonce-respecting (NR) security.
+In view of this, in this paper we propose a general reversible framework for visual privacy protection, which flexibly preserves image usability by utilizing the data hiding technology.
+The proposed framework can not only restore the original image perfectly, but also achieve NR security according to a formal cryptographic proof.
+Furthermore, experiment results confirm that our framework performs well in balancing image privacy and usability with a relatively low time cost.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Visual privacy protection, thumbnail preserving, reversible data hiding.
+\end{IEEEkeywords}
+
+\section{Introduction}
+\IEEEPARstart{T}{he} number of images is increasing as more and more people get into the habit of documenting their daily lives by taking photos. In 2022, more than 300 million photos are uploaded to Facebook everyday\footnote{https://dustinstout.com/social-media-statistics} and Rise Above Research predicts that the global image count can reach 1.5 trillion\footnote{https://blog.mylio.com/how-many-photos-taken-in-2022}.
+%In 2010, Facebook already had to serve more than one million images every second \cite{267146}.
+%Meanwhile, Rise Above Research predicts that the number of images around the world can reach 1.5 trillion in 2022 \cite{digitalReport1}.
+As a result, personal local storage space often fails to meet the growing image storing needs and therefore people start uploading them to cloud platforms such as Google Drive, iCloud, and Baidu Cloud.
+It is convenient for cloud users to browse and manage plaintext images online across multiple electronic devices.
+
+Nevertheless, images in the cloud are out of users' physical control, which raises privacy concerns because they usually contain sensitive personal information such as identity, location, and social relationship \cite{article,fan2019demonstration}.
+For one thing, a lot of hackers focus on attacking cloud platforms to capture stored images.
+One of such incidents was that a large number of Hollywood actresses' private photos were stolen from iCloud in 2014 \cite{wang2018three}.
+For another, the cloud platform may be curious about the personal information contained within images, even if it is assumed to honestly store them without performing unauthorized modifications. 
+%For another, the cloud platform is honest to store images without unauthorized modification but curious about the personal information contained within these images.
+In reality, even some well-known cloud platforms, including Facebook, have illegally sold their users' personal information for profit \cite{isaak2018user}.
+
+%To protect the privacy of the users' images, it is usually necessary to encrypt them before uploading. However, traditional encryption algorithms will make the images completely lose usability.
+Traditional image encryption is a common way to protect the privacy of cloud images without preserving any usability.
+The usability here means that users are still allowed to conveniently browse and manage their images online.
+Unfortunately, images encrypted by traditional algorithms are completely unbrowsable because they are full distorted in visual perception and indistinguishable from each other, as shown in Fig. \ref{1-b}.
+As a result, it becomes troublesome for users to perform online management operations such as finding or deleting a specific image.
+Therefore, a solution that can balance the privacy and usability of cloud images is urgently needed.
+
+To this end, some visual privacy protection (VPP) schemes were proposed, such as image filtering (see Fig. \ref{1-c}) \cite{neustaedter2003design, neustaedter2006blur, sarwar2019privacy, Boyle2000effects, lander2001evaluating, zhou2020personal, park2020block, yu2020street} and object removal (see Fig. \ref{1-d}) \cite{ballester2001filling, efros2001image, drori2003fragment, wang2021conditional}. 
+% They strike a balance between privacy and usability by exploiting a psychophysical research result called \textit{prior knowledge} \cite{greene2015you,gregory1997knowledge,harada2006user}.
+% That is to say, a person can quickly recognize a blurred and distorted image if he/she is the producer or has seen the original version.
+As declared in \cite{greene2015you}, people can rapidly recognize main objects in an image based on existing knowledge of real-world, which is called \textit{prior knowledge}.
+In other words, if people have produced or seen the original image before, they will still have ability of quickly recognizing it after blurring and distortion operations \cite{gregory1997knowledge, harada2006user}.
+According to this principle, images processed by VPP schemes can be recognized by users themselves, thus balancing image privacy and usability at a degree.
+However, these VPP schemes are irreversible, i.e., they do not support the restoration of the original image.
+To solve this problem, a novel technology called thumbnail-preserving encryption (TPE) was subsequently studied \cite{wright2015thumbnail}.
+TPE schemes preserve usability by making the encrypted image have the same or similar thumbnail as the original one, as shown in Fig . \ref{1-e}.
+Meanwhile, image privacy is guaranteed by keeping plaintext information other than thumbnails confidential.
+However, existing TPE schemes are either inefficient \cite{tajik2019balancing,ZHAO2021108019TPE2}, or cannot achieve both goals, i.e., perfect restoration of original images and nonce-respecting (NR) security, at the same time \cite{wright2015thumbnail,yang2020achieve,marohn2017approximate,Zhang9393403HF}.
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[\label{1-a}]{\includegraphics[scale=0.21]{Fig1-1.pdf}}
+    \subfigure[\label{1-b}]{\includegraphics[scale=0.21]{Fig1-2.pdf}}
+    \subfigure[\label{1-c}]{\includegraphics[scale=0.21]{Fig1-3.pdf}}
+    \subfigure[\label{1-d}]{\includegraphics[scale=0.21]{Fig1-4.pdf}}
+    \subfigure[\label{1-e}]{\includegraphics[scale=0.21]{Fig1-5.pdf}}
+    \caption{Images processed by different privacy protection schemes. (a) The original image. (b) Traditional encryption. (c) Image filtering. (d) Object removal. (e) TPE.}
+    \label{intro}
+    \vspace{-8pt}
+\end{figure*}
+%As declared in \cite{greene2015you}, people can rapidly recognize main objects in images based on the prior existing knowledge of real-world, which is called \textit{prior knowledge}.
+%In other words, if people have seen the original image before, they will still have ability of quickly recognizing it after blurring and distortion operations \cite{gregory1997knowledge}.
+%Moreover, the ability can be further enhanced if the image is produced by himself/herself \cite{harada2006user}.
+%Based on this, some visual privacy protection (VPP) schemes have been proposed such as ad hoc distortion, face de-identification, and object removal \cite{PADILLALOPEZ20154177}, helping to balance privacy and usability by hiding details while preserving the outline in the image.
+%But they are irreversible so that people cannot restore the original image after operations.
+%Fortunately, a novel technology called thumbnail-preserving encryption (TPE) was subsequently proposed \cite{wright2015thumbnail}, which only preserves the original thumbnail in the encrypted image without leaking any other plaintext information.
+%According to whether the thumbnail can be completely preserved, TPE schemes can be divided into two categories: ideal and approximate ones.
+%However, most existing approximate TPE schemes \cite{marohn2017approximate, Zhang9393403HF} cannot achieve both goals, i.e., perfect restoration of original images and nonce-respecting (NR) security, at the same time.
+
+In this paper, we propose a general framework to achieve visual privacy protection, which reaches NR security.
+In the proposed framework, processed images can be perfectly restored into their original versions based on the reversibility of applied reversible data hiding in encrypted images (RDHEI) and image encryption methods.
+% Specifically, the image is first divided into two main regions, one for pixel adjustment and the other for auxiliary data embedding.
+% Several highest bits of pixels in the adjustment region are selected to form the vacated room, and the original bit values are embedded into the embedding region as auxiliary information for image restoration by RDHEI methods.
+Specifically, the image is first divided into two main regions, one for pixel adjustment and the other for original data storage.
+Part of bits in the adjustment region are selected to form the vacated room, whose original values are stored in the other region by RDHEI methods.
+Then, the whole image is encrypted to prevent plaintext information leakage.
+Finally, the vacated room of the encrypted image is used to preserve the approximate thumbnail of the original image.
+In terms of security, the image after the above processes leaks nothing about the original image except its approximate thumbnail.
+On the one hand, people who are familiar with the original image, i.e., people with prior knowledge, can easily recognize the processed image.
+On the other hand, attackers without prior knowledge cannot obtain useful information from the processed image.
+
+The main contributions of this paper are listed as follows:
+\begin{itemize}
+\item We propose a RDHEI-based general framework that well balances image privacy and usability by approximately preserving the thumbnail, where RDHEI and image encryption methods can be selected in a wide range according to user needs. Meanwhile, whichever method is chosen, the whole framework is perfectly reversible.
+\item The proposed framework achieves NR security based on the randomness during both image encryption and pixel adjustment processes, for which a formal cryptographic proof is provided.
+\item Three different region division algorithms are available in the proposed framework to better adapt to different application scenarios and RDHEI methods. These algorithms have their own advantages and disadvantages, and users can select the appropriate one according to their own needs.
+\item Extra data can be stored in the vacated room with little impact on the thumbnail. 
+\item Experiments are carried out to show that the proposed framework not only struck a proper balance between image privacy and usability, but also maintains a decent efficiency performance.
+\end{itemize}
+
+The rest part of this paper is organized as follows.
+Section \ref{related work} introduces the related work.
+Section \ref{preliminaries} presents preliminaries and security definitions. 
+Section \ref{construction} details the proposed framework and provides the security proof.
+Evaluation experiments are carried out in Section \ref{experiment} and the conclusion is given in Section \ref{conclusion}.
+
+\section{Related Work}\label{related work}
+\subsection{Irreversible Visual Privacy Protection}
+\subsubsection{Image Filtering}
+Common image filtering schemes, such as blurring, pixelating, and masking, have similar steps.
+First, all regions of interest (ROIs) in the image need to be found out by advanced sensitive information detection algorithms.
+Subsequently, the details of the detected regions are visually protected in different ways.
+%The second step involves visually protecting the details in the detected regions.
+As an example, image blurring schemes blur visual details of ROIs by adding noise \cite{neustaedter2003design, neustaedter2006blur, sarwar2019privacy}.
+% }, which is recently applied to protect privacy within images taken by Micro Aerial Vehicles in \cite{sarwar2019privacy}.
+Instead, pixelation involves dividing each RIO into sub blocks and then replacing all pixels with the average pixel value in every sub block \cite{Boyle2000effects, lander2001evaluating, zhou2020personal}.
+Masking is a simple operation to make sensitive content invisible just by covering all pixels in ROIs with the same pixel value \cite{park2020block, yu2020street}.
+Though image filtering schemes are effective in protecting specific sensitive information, there is no guarantee that all ROIs can be accurately detected.
+Moreover, they are irreversible so that users cannot get the original version after the operations.
+
+\subsubsection{Object Removal}
+The core of object removal lies in the inpainting technology, which is used to repair the missing region after deleting specific objects in the image.
+Image inpainting schemes fall into two broad categories, i.e.,  ``\textit{fill through copying}" and ``\textit{fill through modeling}" \cite{yi2020contextual}, and the former can be classified into three types: diffusion \cite{ballester2001filling}, texture synthesis \cite{efros2001image}, and patch-based \cite{drori2003fragment}.
+% The first type is based on diffusion, which spreads pixel information around the missing region inward \cite{ballester2001filling}.
+% The second type is based on texture synthesis, which fills the missing region with extended texture around \cite{efros2001image}.
+% The third type, i.e., the patch-based scheme, fills the missing region with patches that are most similar to the region boundaries all over the image \cite{drori2003fragment}.
+Compared with copy-based schemes, model-based schemes are more widely applied as they can generate more deceptive content to fill the region.
+Rather than synthesizing texture, they select necessary pixel information and then generate new content in a data-drive manner \cite{wang2021conditional}.
+Unfortunately, the inpainting procedure is very time consuming and the whole object removing procedure is irreversible.
+
+\subsection{Thumbnail-preserving Encryption}
+Relying on people's powerful ability of visual recognition, TPE balances image privacy and usability by blurring the details within thumbnail blocks while preserving the outline of the image.
+Specifically, pixel values are supposed to be encrypted while the average value is exactly or approximately preserved in each block.
+The first TPE scheme, proposed by Wright \textit{et al.} \cite{wright2015thumbnail}, only shuffles pixels within each block and is not secure because it exposes the entire list of pixel values.
+%The first TPE scheme was proposed by Wright \textit{et al.}, where pixel shiffing within each block is applied \cite{wright2015thumbnail}.
+%But the scheme is not secure in face of chosen-plaintext attacks \cite{Jolfaei7295616, ZHANG2018228}.
+Therefore, Tajik \textit{et al.} proposed an exact TPE scheme based on sum-preserving encryption (SPE), achieving NR security \cite{tajik2019balancing}.
+Subsequently, improvements were accomplished by applying sum preserving function of three pixels \cite{ZHAO2021108019TPE2} or perfecting the SPE algorithm utilized by Tajik \textit{et al.} \cite{yang2020achieve}.
+However, both the scheme of Tajik \textit{et al.} and the subsequent improvements require significant time overhead to exactly preserve the thumbnail.
+%However, completely preserving the thumbnail often takes much time and is not practical.
+
+Preserving the thumbnail approximately rather than exactly can generally be exchanged for efficiency gains. Approximate TPE was first proposed by Marohn \textit{et al.} in \cite{marohn2017approximate}
+, which contains two schemes, i.e., dynamic range preserving encryption (DRPE) and approximate TPE with the least significant bit embedding (LSB-TPE). Among them, DRPE has a probability of decryption failure. Although LSB-TPE solves the above problem, the decrypted image has noise compared with the original one.
+%DRPE only encrypts the lowest several bits within the dynamic range but may fail to decrypt. 
+%LSB-TPE flips bits of each pixel in encrypted image and modifies the highest bits to approximately preserve the thumbnail. 
+%Unfortunately, the decrypted image has noise compared with the original one.
+% \textcolor{blue}{Unfortunately, the schemes may either fail to decrypt or have noise in decrypted images.}
+Afterwards, Zhang \textit{et al.} made an improvement to eliminate the occurrence of decryption failure and reduce the image noise after decryption \cite{Zhang9393403HF}.
+However, perfect restoration of the original image is still not supported in the scheme of Zhang \textit{et al.} and none of the schemes mentioned in this paragraph achieve NR security. 
+%they still cannot perfectly restore the original image and achieve NR security.
+Finally, the comparison between existing TPE schemes and our framework is summarized in Table \ref{comparison}.
+
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{1mm}
+\renewcommand\arraystretch{2}
+\caption{Comparison with existing TPE schemes}
+\label{comparison}
+\begin{tabular}{ccccccccc}
+\toprule
+Schemes &\makecell{Wright \\ \cite{wright2015thumbnail}} &\makecell{Tajik \\ \cite{tajik2019balancing}} &\makecell{TPE2 \\ \cite{ZHAO2021108019TPE2}} &\makecell{Yang \\ \cite{yang2020achieve}} &\makecell{DRPE \\ \cite{marohn2017approximate}} &\makecell{TPE-LSB \\ \cite{marohn2017approximate}} &\makecell{HF-TPE \\ \cite{Zhang9393403HF}} &Our \\  \midrule
+\makecell{Low\\ time-cost} &\checkmark &$\times$ &$\times$ &$\times$ &\checkmark &\checkmark &\checkmark &\checkmark \\
+\makecell{NR-\\ security} &$\times$  &\checkmark &\checkmark &$-$ &$\times$ &$\times$ &$\times$ &\checkmark\\
+\makecell{Decryption} &\checkmark  &\checkmark &\checkmark &\checkmark &\makecell{may \\ fail} &\checkmark &\checkmark &\checkmark\\
+\makecell{Perfect \\ restoration} &\checkmark  &\checkmark &\checkmark &\checkmark &\makecell{may \\ fail} &$\times$ &$\times$ &\checkmark\\  \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reversible Data Hiding}
+RDH is an important technology to hide extra information in an image while generating only slight disturbance in the cover image. RDHEI is part of RDH specifically for the ciphertext domain, which focus on high capacity and security level.
+RDHEI schemes can be classified into three categories, i.e., vacating room after encryption (VRAE), vacating room by encryption (VRBE), and reserving room before encryption (RRBE), according to whether the encryption procedure is before room vacating or not and whether the applied image encryption method is specially designed or not.
+% The image encrypted by traditional encryption methods cannot remain any pixel correlation of plaintext, causing it difficult to embed extra data by utilizing redundancy of pixels in the encrypted image.
+Among them, VRAE is supposed to take advantages of smoothness in the original image during data extraction and image restoration \cite{zhang2011reversible, qian2015reversible} while VRBE is designed to maintain partial pixel correlation during the special encryption process \cite{huang2016new, lingfeng2021cryptanalysis}.
+However, the redundancy retained in VRAE and VRBE is still limited.
+By contrast, RRBE is able to maximize the preservation of redundancy in the plaintext domain by vacating room before encryption \cite{ma2013reversible}.
+In our framework, the primary need in the room vacating procedure is high capacity.
+For this reason, we apply RRBE schemes \cite{wang2021high, yin2020reversible, wu2019improved, puteaux2020recursive} to reserve room for hiding auxiliary information before the encryption step.
+
+\section{Preliminaries}\label{preliminaries}
+\subsection{Thumbnail Generation Procedure}
+Thumbnails but not images themselves are often provided by cloud platforms for online browsing since thumbnails are much smaller in file size and therefore faster to be transported over the Internet. 
+In general, thumbnails are generated by the following procedure. 
+%Here, the thumbnail generation procedure is introduced as follows.
+
+First, the original image $\mathbf{I}$ is divided into non-overlapping blocks ${\mathbf{B}}_{i,j}$ of size $b \times b$ so that there are $\lceil M / b \rceil \times \lceil N / b \rceil$ blocks in the whole image, where $M$ and $N$ are the height and width of $\mathbf{I}$, respectively, and $\lceil\cdot\rceil$ represents upward rounding.
+Then the average of all pixels in one block is calculated and becomes one pixel value in the corresponding thumbnail, i.e., 
+\begin{equation*}
+\label{eq1}
+    \mathbf{I}^{th}(i,j) = \frac{\sum_{p=1}^{b}\sum_{q=1}^{b}{\mathbf{B}}_{i,j}(p,q)}{b^2},
+\end{equation*}
+where $i\in\{1, 2,...,\lceil M/b \rceil\}$, $j \in \{1, 2,...,\lceil N/b \rceil\}$, $\mathbf{B}_{i,j}$ denotes the block of location $(i,j)$ in $\mathbf{I}$, and $\mathbf{I}^{th}$ is the generated thumbnail.
+%Therefore, approximate thumbnail preserving signifies sum of pixel values in each block is approximately maintained.
+
+\subsection{Security Definition}
+\label{Sec-Def}
+The security definition of TPE refers to format-preserving encryption (FPE) since TPE is a special type of FPE \cite{bellare2009format,tajik2019balancing}.
+Here, $\mathbf{M}$ is an image belonging to the plaintext image set $\mathcal{M}$, $\mathbf{C}$ is the encrypted version of $\mathbf{M}$, and $\Phi(\mathbf{M})$ returns the thumbnail and dimension of $\mathbf{M}$.
+
+\newtheorem{deff}{\bf Definition}
+\begin{deff}\label{deff1}
+%An encryption scheme is $\Phi$-preserving if it satisfies the following conditions for all key $K$, nonce $T$, and $M$.
+An encryption scheme is $\Phi$-preserving if for all possible values of key $K$, nonce $T$, and $\mathbf{M}$, it satisfies 
+\begin{equation*}
+\label{eq2}
+\left\{  
+             \begin{array}{lll}  
+             \textnormal{Enc}_K(T,\mathbf{M}) = \mathbf{C} \in \mathcal{M}, \\  
+             \textnormal{Dec}_K(T,\mathbf{C}) = \mathbf{M}, \\  
+             \Phi(\mathbf{C}) = \Phi(\mathbf{M}).   
+             \end{array}  
+\right. 
+\end{equation*}
+\end{deff}
+
+For TPE, $\Phi$-preserving means that the encrypted image still shares the same thumbnail and dimension as the original one.
+
+\begin{deff}\label{deff2}
+A TPE scheme is pseudo-random permutation (PRP) secure if
+\begin{equation}
+\label{eq3}
+    \bigg|\mathop{ \textnormal{Pr}}\limits_{K\leftarrow{\{0,1\}^\lambda}}[\mathcal{A}^{ \textnormal{Enc}_K(\cdot,\cdot)}(\lambda)=1]-\mathop{ \textnormal{Pr}}\limits_{\textnormal{F}\leftarrow{\mathcal{F}_\Phi}}[\mathcal{A}^{ \textnormal{F}(\cdot,\cdot)}(\lambda)=1]\bigg|
+\end{equation}
+is negligible in $\lambda$ for all probabilistic polynomial time (PPT) machines $\mathcal{A}$. Here, all functions belonging to set $\mathcal{F}_\Phi$ are $\Phi$-preserving and $\textnormal{F}$ is a bijective function: $\{0,1\}^* \times \mathcal{M} \rightarrow{\mathcal{M}}$, which is randomly selected from $\mathcal{F}_\Phi$. 
+\end{deff}
+
+From an intuitive point of view, a TPE scheme is PRP-secure if any processed image is computationally indistinguishable from a randomly selected image that shares the same thumbnail and dimension with the original one.
+
+\begin{deff}\label{deff3}
+An FPE scheme achieves NR security if it satisfies Eq. (\ref{eq3}) but only with a different $T$ for each call.
+\end{deff}
+
+NR security is equivalent to PRP security if each image is encrypted under different $T$.
+In practical, we can take information of the image such as its time stamp, device model, and dimension to generate a unique $T$ for every image.
+% As a result, the image processed by an PRP-secure TPE scheme leaks nothing other than the dimension and thumbnail of the original one.
+%In other words, the processed image by TPE is distinguishable from the randomly generated image which shares the same thumbnail with the original one, i.e., TPE leaks nothing other than dimensions and the thumbnail of original images.
+Our framework achieves NR security as proofed in Section \ref{proof}.
+
+\section{Framework Construction}\label{construction}
+The overview of the proposed framework is displayed in Fig. \ref{overview}.
+% while main notations utilized in the framework and their meanings are displayed in Table \ref{notation}.
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[\label{2-a}]{\includegraphics[scale=0.53]{Fig2-1.pdf}}
+    \subfigure[\label{2-b}]{\includegraphics[scale=0.53]{Fig2-2.pdf}}
+    \caption{The overview of the proposed framework. (a) The processing procedure. (b) The restoration procedure.}
+    \label{overview}
+    \vspace{-3pt}
+\end{figure*}
+Two entities are considered in the proposed framework, i.e., the local user and the cloud platform, which are introduced as follows.
+\begin{itemize}
+\item \textbf{The local user.} The user is supposed to locally process images using the proposed framework and then upload the processed images into the cloud platform to save local storage resources. %for online browsing and management.
+% The user demands that images in the cloud remain browsable and manageable.
+If the user needs the original version of a specific image, he/she can download the processed image from the cloud and then restore the original one perfectly.
+    
+\item \textbf{The cloud platform.} The cloud is supposed to generate thumbnails of all uploaded images and display them to the user for online browsing and management. 
+The cloud may be curious about the content of images but is assumed to never tamper with it.
+\end{itemize}
+
+In a word, the target of the proposed framework is balancing image privacy and usability.
+Here, privacy means protecting personal sensitive information that may be contained in images and usability represents that images in the cloud are still visually identifiable by the user.
+The details of the proposed framework are described in this section.
+
+\subsection{Region Division}
+The goal of region division is dividing the image into regions with different functions, which can be seen as the preprocessing for subsequent steps.
+Three different region division methods are introduced here, i.e., frame like (FLRD), intra-block (IBRD), and bit-plane based region division (BBRD).
+\subsubsection{FLRD}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.3]{Fig3.pdf}
+    \caption{The division paradigm of FLRD.}
+    \label{FLRD}
+     \vspace{-7pt}
+\end{figure}
+As people tend to place key objects in the center of the image when shooting, the region for data hiding is placed at the edge of the image to make the center area full for adjusting to preserve the pixel sum of center blocks as unchanged as possible.
+At the same time, no information at the edge is visible so that some similar images cannot be distinguished by observing the edge of them.
+A division paradigm of FLRD is shown in Fig. \ref{FLRD}, where $\textnormal{Reg.E}$ means the region for auxiliary data embedding, $\textnormal{Reg.A}_\textnormal{vac}$ contains highest $\rho$ bits of pixels in the adjustment region $\textnormal{Reg.A}$, and $\textnormal{Reg.A}_\textnormal{ori}$ includes the rest part that keeps unchanged in the room vacating and pixel adjustment steps.
+The size of $\textnormal{Reg.A}_\textnormal{vac}$ is determined by $\delta$ and $\rho$, where $\delta$ denotes the width of $\textnormal{Reg.E}$.
+The space of $\textnormal{Reg.A}_\textnormal{vac}$ will be enlarged if $\delta$ increases or $\rho$ decreases, which results in enlarging the adjustable range during the pixel adjustment procedure but increasing the amount of auxiliary data to be embedded.
+Specially, the decrease of $\delta$ leads to less space of $\textnormal{Reg.E}$ and decrease of embedding capacity.
+Therefore, there is a trade-off between the adjustable range and embedding capacity.%we are supposed to take a balance between the embedding capacity and vacated space.
+
+\subsubsection{IBRD}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.3]{Fig4.pdf}
+    \caption{The division paradigm of IBRD.}
+    \label{IBRD}
+\end{figure}
+To preserve the outline at the edge of the image, IBRD is designed by scattering $\textnormal{Reg.A}$ within each thumbnail block.
+A division paradigm of IBRD in a block is shown in Fig. \ref{IBRD} and the function of each region is the same as that of FLRD.
+Here, the size of $\textnormal{Reg.A}_\textnormal{vac}$ is also determined by $\zeta$ and $\rho$, where $\zeta$ here represents the number of pixels that belongs to $\textnormal{Reg.A}$ in each block.
+The adjustable range of blocks in IBRD is smaller than that in $\textnormal{Reg.A}$ of FLRD as $\textnormal{Reg.E}$ occupies part space in the block.
+In addition, the block size should generally not be smaller than $8 \times 8$ to have enough space for auxiliary data embedding (there is no such restriction for the other two division methods).
+\subsubsection{BBRD}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.3]{Fig5.pdf}
+    \caption{The division paradigm of BBRD.}
+    \label{BBRD}
+\end{figure}
+Unlike the previous two region division methods, BBRD is based on bit-planes to vacate the highest $\rho$ bits of every pixel and maximize the adjustable range as shown in Fig. \ref{BBRD}.
+Here, $\textnormal{Reg.R}$ means the bit-planes for recording image data, $\textnormal{Reg.V}$ represents the rest bit-planes vacated by RDHEI, and $\textnormal{Reg.A}$ refers to a part thereof that is actually used for pixel adjustment. 
+This division method is suitable to compression-based RDHEI, in which all image data is to be compressed and stored in low bit-planes.
+On the downside, compression-based RDHEI may waster resources because no matter how much space of $\textnormal{Reg.A}$ the user actually requires, the whole compression procedure should be implemented with the same time consumption.
+The size of $\textnormal{Reg.V}$ is determined by the applied RDHEI method and does not change with parameter settings.
+Nevertheless,  the user can still control the size of $\textnormal{Reg.A}$ by changing the values of $\zeta$ and $\rho$ under guarantee that $\textnormal{Reg.A}$ must be smaller than $\textnormal{Reg.V}$.
+
+In conclusion, each division method has its own advantages and disadvantages, and the user can flexibly select one of them according to his/her needs.
+\subsection{Room Vacating}
+The main goal of this procedure is to vacate room without losing any information of the original image, i.e., the whole procedure is completely reversible.
+In terms of FLRD and IBRD, all bits in $\textnormal{Reg.A}_\textnormal{vac}$ are arranged and compressed first to get a bit stream $\mu$ as auxiliary information to be embedded.
+Specifically, the bits are arranged based on their position in the pixel since the adjacent bits in the same position are usually the same.
+For example, if the bits in $\textnormal{Reg.A}_\textnormal{vac}$ are $\{100, 101, 100, 100\}$, they will be arranged as the bit stream $111100000100$.
+After that, run-length encoding is applied to compress the arranged bit stream to save storage space.
+Then, $\mu$ is embedded into $\textnormal{Reg.E}$ by existing advanced RDHEI schemes.
+As for BBRD, the whole image data is supposed to be compressed by RDHEI to vacate $\textnormal{Reg.V}$.
+% When applying these RDHEI schemes, we always embed data before encryption locally and therefore there is no third entity, i.e., data hider.
+In the following, we briefly introduce four RDHEI schemes and explain how to utilize them in our framework to achieve the goal.
+
+\subsubsection{Adaptive Most Significant Bit Prediction Based RDHEI}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.3]{AMP.pdf}
+    \caption{The detailed functions of each region in AMP-RDHEI for IBRD.}
+    \label{AMP}
+\end{figure}
+The adaptive the most significant bit (MSB) prediction based RDHEI (AMP-RDHEI) scheme \cite{wang2021high}, which applies to both FLRD and IBRD, is described below.
+$\textnormal{Reg.E}$ is divided into sub blocks of size $2\times2$ first as shown in Fig. \ref{AMP} and then a location map $\Delta$ of length $\lfloor{\frac{\lfloor{\frac{b^2-\zeta}{2}}\rfloor}{2}}\rfloor \times \lfloor{\frac{b}{2}}\rfloor$ is generated to record whether the sub block can be embedded with extra data or not, where $\lfloor\cdot\rfloor$ represents downward rounding.
+In every sub block, there are four pixels, i.e., $P$, $C_1$, $C_2$, and $C_3$, among which $P$ is preserved for prediction and the others are processed by
+\begin{equation*}
+\begin{aligned}
+    &md = 8 - \textnormal{Max}(\textnormal{Dif}(P,C_i)),\\ 
+    e_i&(1:8-md) = C_i(md+1:8),
+\end{aligned}
+\end{equation*}
+where $i\in \{1,2,3\}$, $\textnormal{Max}(\cdot)$ returns the maximum value of inputs, and $\textnormal{Dif}(x_1,x_2)$ gets the last bit in $x_1$ that is different from the one in $x_2$ from the LSB to the MSB.
+As a result, only $P$, $md$, $e_1$, $e_2$, and $e_3$ need to be recorded to preserve the original content in each sub block.
+At the same time, pixels in the sub block remain unchanged and the corresponding value in $\Delta$ is $0$ if $md = 0$; otherwise the value in $\Delta$ is $1$.
+As for IBRD, $\mu$ is embedded in the sub blocks, each of which has $3\times(md-1)$ bits vacated. $\Delta$ is compressed by run-length encoding and stored in $\textnormal{Reg.E}_\textnormal{r}$. As for FLRD, the compressed version of all sub blocks, i.e., $o$, is computed and the content of $\textnormal{Reg.E}$ is reconstructed as
+\begin{equation*}
+    \lvert\Delta\rvert \ \Vert\ \Delta \ \Vert\  o \ \Vert\ \mu,
+\end{equation*}
+where $\lvert\cdot\rvert$ returns the length of an inputted bit stream or the number of elements in an inputted set and $\Vert$ represents con-nection operation.
+\subsubsection{Pixel Prediction and Bit-Plane Compression Based RDHEI}
+\begin{figure}[htbp]
+    \centering
+    \subfigure[\label{PPBC-a}]{\includegraphics[scale=0.39]{PPBC-1.pdf}}
+    \subfigure[\label{PPBC-b}]{\includegraphics[scale=0.39]{PPBC-2.pdf}}
+    \caption{The value distributions of all pixels and prediction errors in an image. (a) The original pixels. (b) The prediction errors.}
+    \label{PPBC}
+\end{figure}
+The use of pixel prediction and bit-plane compression based RDHEI (PPBC-RDHEI) \cite{yin2020reversible} in BBRD is explained as follows. %BBRD is utilized for RDHEI based on pixel prediction as well as bit-plane compression (PPBC-RDHEI).
+
+First, the median edge predictor (MED) is utilized to predict the pixels in the image except the pixel at the top left corner, i.e,%pixels in the image are predicted by median edge detector (MED) predictor as follows, except the pixel in the upper left corner of the image unchanged.
+\begin{equation*}%\small
+\small
+\begin{aligned}
+&\mathbf{pred}(i,j) = \\
+    &\left\{  
+            \begin{array}{llllll}  
+            \textnormal{Max}(\mathbf{I}_\textnormal{div}(i-1,j),\mathbf{I}_\textnormal{div}(i,j-1)),\\ 
+            ~\quad\textnormal{if}~~\mathbf{I}_\textnormal{div}(i-1,j-1)\leq\textnormal{Min}(\mathbf{I}_\textnormal{div}(i-1,j),\mathbf{I}_\textnormal{div}(i,j-1)), \\  
+            \textnormal{Min}(\mathbf{I}_\textnormal{div}(i-1,j),\mathbf{I}_\textnormal{div}(i,j-1)),\\  
+            ~\quad\textnormal{if}~~\mathbf{I}_\textnormal{div}(i-1,j-1)\leq\textnormal{Max}(\mathbf{I}_\textnormal{div}(i-1,j),\mathbf{I}_\textnormal{div}(i,j-1)), \\    
+            \mathbf{I}_\textnormal{div}(i-1,j)+\mathbf{I}_\textnormal{div}(i,j-1)-\mathbf{I}_\textnormal{div}(i-1,j-1), \\
+            ~\quad\textnormal{otherwise},
+            \end{array}  
+\right. 
+\end{aligned}
+\end{equation*}
+where $\mathbf{pred}(i,j)$ represents the prediction value of the pixel located at $(i,j)$ in the image and  $\textnormal{Min}(\cdot)$ returns the minimum value of inputs.
+
+Second, the prediction error is calculated by
+\begin{equation*}
+    \mathbf{e}(i,j) = \mathbf{pred}(i,j) - \mathbf{I}_\textnormal{div}(i,j)
+\end{equation*}
+and a prediction error image $\mathbf{I}_\textnormal{err}$ is generated as 
+\begin{equation*}
+\begin{aligned}
+&\mathbf{I}_\textnormal{err}(i,j) = \\
+    & \left\{  
+            \begin{array}{lll}  
+            \mathbf{I}_\textnormal{div}(i,j),&\textnormal{if}~~\mathbf{e}(i,j)>127~\textnormal{or}~\mathbf{e}(i,j)<-127, \\
+            \mathbf{e}(i,j)\times2,&\textnormal{if}~~0\leq\mathbf{e}(i,j)<127, \\
+            -\mathbf{e}(i,j)\times2+1,&\textnormal{if}~~-127<\mathbf{e}(i,j)<0. 
+            \end{array}  
+\right. 
+\end{aligned}
+\end{equation*}
+Here, if $\mathbf{e}(i,j)>127$ or $\mathbf{e}(i,j)<-127$, we say that the pixel fails to be predicted and the original value $\mathbf{I}_\textnormal{div}(i,j)$ instead of the prediction error is recorded in $\mathbf{I}_\textnormal{err}$; otherwise, the absolute value of $\mathbf{e}(i,j)$ is recorded in the highest $7$ bits of pixels in $\mathbf{I}_\textnormal{err}$ while the LSB is used to record the sign of $\mathbf{e}(i,j)$.
+As shown in Fig. \ref{PPBC}, the value distribution of the prediction errors is more compact than that of the original pixels so that there are more redundancy to be utilized during compression.
+Moreover, the sign of $\mathbf{e}(i,j)$ is stored in the LSB individually to make the high bits of the prediction errors more consistent.
+
+Third, $\mathbf{I}_\textnormal{err}$ is split into $8$ bit-planes and is compressed into a bit stream $\nu$ by run-length encoding based on the bit-plane.
+After that, the image is reconstructed by storing all auxiliary information in low bit-planes of the image and then $\textnormal{Reg.V}$ is vacated.
+Here, the content of auxiliary information is
+\begin{equation*}
+    \lvert\Delta\rvert \ \Vert\ \Delta \ \Vert\  \lvert\nu\rvert \ \Vert\ \nu.
+\end{equation*}
+\subsubsection{Parametric Binary Tree Labeling Based RDHEI}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.15]{PBTL.pdf}
+    \caption{The distribution of predictors applied in different areas for PBTL-RDHEI.}
+    \label{PBTL}
+\end{figure}
+The parametric binary tree labeling based RDHEI (PBTL-RDHEI) scheme  \cite{wu2019improved} also applies to both FLRD and IBRD, which is described below. 
+
+The first step is aimed at pixel prediction in $\textnormal{Reg.E}$ as shown in Fig. \ref{PBTL}, where adjacent prediction means that the value of current pixel is predicted to be the same as the adjacent known pixel and $P_\textnormal{r}$ is the pixel remaining unchanged during the whole procedure.
+The second step aims at labeling pixels that can be compressed to vacate room for storing auxiliary information.
+Given two parameters $\alpha$ and $\beta$, the number of labels, i.e., $n_\alpha$, can be calculated by
+\begin{equation*}
+\begin{aligned}
+   n_\alpha = \left\{  
+            \begin{array}{ll}  
+            2^\alpha-1, &\textnormal{if}~~\alpha\leq\beta, \\
+            (2^\beta-1)\times2^{\alpha-\beta}, &\textnormal{otherwise}.
+            \end{array}  
+\right. 
+\end{aligned}
+\end{equation*}
+Then, the labels are generated as shown in Fig. \ref{Label}.
+Subsequently, the generated prediction errors are classified into two sets, i.e.,
+\begin{equation*}
+    \left\{  
+             \begin{array}{ll}  
+              \mathbb{P}_\textnormal{e} = \{\mathbf{e}(i,j)|\lceil-\frac{n_\alpha}{2}\rceil\leq\mathbf{e}(i,j)\leq\lfloor\frac{n_\alpha-1}{2}\rfloor\}, \\
+              \mathbb{P}_\textnormal{n} = \{\mathbf{e}(i,j)|\mathbf{e}(i,j)\notin \mathbb{P}_\textnormal{e}\},
+             \end{array}  
+\right. 
+\end{equation*}
+where $\mathbf{e}(i,j)$ denotes the pixel prediction error located at $(i,j)$ in $\textnormal{Reg.E}$.
+Finally, pixels in $\textnormal{Reg.E}$ are processed by
+\begin{equation*}
+\begin{aligned}
+    & \mathbf{I}_\textnormal{vac}(i,j)(1:8) = \\
+    & \left\{
+    \begin{array}{ll}
+        \textnormal{Label}(\mathbf{e}(i,j)) \ \Vert\  \omega(k:k+8-\alpha), &\textnormal{if}~~\mathbf{e}(i,j)\in \mathbb{P}_\textnormal{e}, \\
+        \overbrace{0\cdots 0}^{\beta} \ \Vert\ \mathbf{I}_\textnormal{div}(i,j)(\beta+1:8), &\textnormal{if}~~\mathbf{e}(i,j)\in \mathbb{P}_\textnormal{n},
+    \end{array}
+\right.
+\end{aligned}
+\end{equation*}
+where $\textnormal{Label}(x)$ returns the label corresponding to the inputted prediction error $x$ as shown in Fig. \ref{Label}, $\omega$ denotes the data to be embedded containing $\mu$ and the original high $\beta$ bits of pixels belonging to $\mathbb{P}_\textnormal{n}$, i.e., $o$, and $k$ represents the current subscript of $\omega$.
+In addition, there are two significant points that need to be noted throughout the procedure.
+The one is the pixel prediction order, it needs to be ensured that when traversing to the pixel located at $(i,j)$, the pixels on which the prediction depends are known.
+The other is that the order of pixel traverse during the embedding and extraction procedures must be consistent to guarantee the restoration of pixels in $\mathbb{P}_\textnormal{n}$.
+\begin{figure}[htbp]
+    \centering
+    \subfigure[\label{label-a}]{\includegraphics[scale=0.32]{Label-1.pdf}}
+    \subfigure[\label{label-b}]{\includegraphics[scale=0.32]{Label-2.pdf}}
+    \caption{An example of label generation in PBTL-RDHEI under different parameter settings. (a) $\alpha=2,\beta=3$. (b) $\alpha=3,\beta=2$.}
+    \label{Label}
+\end{figure}
+\subsubsection{Bit-Plane Recursive Iteration Based RDHEI}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.25]{BPRI.pdf}
+    \caption{The procedure of PE consideration in BPRI-RDHEI.}
+    \label{BPRI}
+\end{figure}
+The bit-plane recursive iteration based RDHEI (BPRI-RDHEI) scheme \cite{puteaux2020recursive} applies to BBRD, which recursively processes each bit-plane from the MSB-plane to the second LSB-plane while keeping the pixels at the top left corner of the image unchanged.
+Suppose that the current bit-plane to be processed is the $(k+1)$-th ($k\in[0,6]$) bit-plane and the first step is prediction error (PE) consideration for every pixel except the one located at $(0,0)$ as shown in Fig. \ref{BPRI}, where $k$ also means the $k$-th iteration, $\textnormal{Abs}(\cdot)$ returns the absolute value of the inputted number, and $\mathbf{P}_k^{[k,7]}(i,j)$ represents the lowest $8-k$ bits of pixels in the image after $k-1$ iterations. For example,
+\begin{equation*}
+    \mathbf{P}_0^{[0,7]}(i,j) = \mathbf{I}_\textnormal{div}(i,j)(1:8).
+\end{equation*}
+In addition, $\mathbf{L}_\textnormal{loc}^k$ of size $M\times N$ is used to record whether the pixel can be correctly predicted or not, and $\mathbb{L}_\textnormal{val}^k$ denotes the set of PE values.
+For every $x$ in $\mathbb{L}_\textnormal{val}^k$, $8-k$ bits are used to record its value since the value of $x$ must be in range $[-2^{6-k},2^{6-k}]$.
+If $|\mathbb{L}_\textnormal{val}^k\times(8-k)|$ is smaller than $M\times N$, we say that this bit-plane can be successfully compressed and the corresponding value in $\mathbf{L}_\textnormal{lac}^k$ is changed to $1$.
+Then, $\mathbf{P}_k^{[k,7]}(i,j)$ is adaptively adjusted by
+\begin{equation*}
+\begin{aligned}
+    & \mathbf{P}_{k+1}^{[k,7]}(i,j) =\\
+    & \left\{
+    \begin{array}{ll}
+        \mathbf{P}_k^{[k,7]}(i,j)+\mathbb{L}_\textnormal{val}^k(r), &\textnormal{if}~~\textnormal{Abs}(\mathbb{L}_\textnormal{val}^k(r))\neq2^{6-k}+1, \\
+        \mathbf{P}_k^{[k,7]}(i,j), &\textnormal{otherwise},
+    \end{array}
+\right.
+\end{aligned}
+\end{equation*}
+where $r$ denotes the subscript of $\mathbb{L}_\textnormal{val}^k$.
+The structure of information that should be recorded is
+\begin{equation*}
+         flag = 1 \ \Vert\ \mathbf{I}_\textnormal{div}^{[k]}(0,0) \ \Vert\  (|\mathbb{L}_\textnormal{val}^k|\times(8-k))\ \Vert\  \mathbb{L}_\textnormal{val}^k.
+\end{equation*}
+In contract, if the $(k+1)$-th bit-plane fails to be compressed, the bit-planes from $(k+1)$-th to 8-th remain unchanged and all information is recorded as
+\begin{equation*}
+    flag = 0\ \Vert\ \mathbf{P}_{k}^{[k,7]}(0,0) \sim \mathbf{P}_{k}^{[k,7]}(M,N).
+\end{equation*}
+By the way, regardless of whether the first seven bit-planes can be successfully compressed or not, the eighth bit-plane will not be compressed but will be retained directly.
+\subsection{Image Encryption}
+Given a nonce $T$ and an encryption key $K_\textnormal{e}$, the whole image is encrypted in this procedure.
+There are two requirements for the image encryption method applied here. First, each pixel in the encrypted image must be in range $[0,255]$ to ensure that the generated ciphertext is still rendered in image format.
+Second, the encryption method should be bit-independent, i.e., modification of any bit of the encrypted pixel does not affect the decryption of other bits. If not, encryption must avoid $\textnormal{Reg.A}_\textnormal{vac}$ to prevent the occurrence of decryption failure since the bits in $\textnormal{Reg.A}_\textnormal{vac}$ will be changed during the adjustment process. 
+%In other words, the encryption operation on $\textnormal{Reg.A}_\textnormal{vac}$ and other regions should be implemented independently.  
+In this paper, we apply the bit-independent stream cipher method as an example to encrypt the whole image. %In this paper, we apply stream cipher to encrypt the whole image as an example.
+
+First, the key matrix $\mathbf{I}_\textnormal{key}$ is generated as 
+\begin{equation*}
+    \mathbf{I}_\textnormal{key} = \textnormal{Gen}(T,K_\textnormal{e}),
+\end{equation*}
+where $\textnormal{Gen}(\cdot)$ is a pseudo-random integer generator and $\mathbf{I}_\textnormal{key}$ is of the same size as $\mathbf{I}_\textnormal{vac}$. %the size of $\mathbf{I}_\textnormal{key}$ is completely the same as $\mathbf{I}_\textnormal{vac}$.
+As the input $T$ is different for each call, the resulting $\mathbf{I}_\textnormal{key}$ is also different for each key generation call.
+Afterwards, the whole image $\mathbf{I}_\textnormal{vac}$ is encrypted by
+\begin{equation*}
+    \mathbf{I}_\textnormal{enc}(i,j) = \mathbf{I}_\textnormal{vac}(i,j) \oplus \mathbf{I}_\textnormal{key}(i,j),
+\end{equation*}
+where $\oplus$ denotes an exclusive OR (XOR) operation.
+In this way, the encrypted image reveals nothing about the original image.
+\subsection{Pixel Adjustment}
+The goal of this procedure is to adjust the values of bits in $\textnormal{Reg.A}_\textnormal{vac}$ of FLRD and IBRD or $\textnormal{Reg.A}$ of BBRD to preserve the thumbnail of $\mathbf{I}_\textnormal{adj}$ as similar to the original one as possible.
+In the process of pixel adjustment, randomness is added by inputting the nonce $T$ and an adjustment key $K_\textnormal{a}$ to improve the security of the framework. 
+The detailed operation procedure in each thumbnail block is shown in \textbf{Algorithm \ref{Adjust}}, where $\{p_1,\cdots, p_{b^2}\}$ is the pixel list of a block in $\mathbf{I}_\textnormal{enc}$, $s$ is the original sum of pixels in the thumbnail block, $sum$ denotes the sum of pixel values in all regions except the region to be adjusted, and $dis$ represents the difference between the target pixel sum and the current one of the block.
+In addition, $\textnormal{Mod}(\cdot)$ indicates the modulo operation, $\textnormal{Rand}(T,K,n)$ returns a random integer in range $[0,n]$ with the inputted nonce $T$ and key $K$, and $\textnormal{Perm}(T,K,list)$ randomly permutates the inputted integer sequence $list$ under the control of $T$ and $K$.
+As for different region division methods, the adjustable ranges of each thumbnail block are 
+\begin{equation*}
+    \left\{  
+             \begin{array}{lll}  
+             s \sim s+b^2\times(2^8-2^{8-\rho}) &\textnormal{ for FLRD},\\
+             s \sim s+\zeta\times(2^8-2^{8-\rho}) &\textnormal{ for IBRD},\\
+             s \sim s+\zeta\times(2^8-2^{8-\rho}) &\textnormal{ for BBRD}.
+             \end{array}  
+\right. 
+\end{equation*}
+If the original sum of pixel values in a block is within the above range, the block can be successfully adjusted.
+During the entire pixel adjustment procedure, we do not utilize anything other than the original thumbnail to adjust the encrypted image and therefore no other information is revealed.
+\begin{algorithm}[htbp]
+\caption{Pixel\_adjustment}
+\label{Adjust}
+	\LinesNumbered
+	\KwIn{$b$, $\zeta$, $\rho$, $T$, $K_\textnormal{a}$, $\{p_1,\cdots, p_{b^2}\}$, $s$}
+	\KwOut{$\{p_1,\cdots, p_{b^2}\}$}
+	$sum = \sum^\zeta_{i=1}\textnormal{Mod}(p_i,2^{8-\rho})+\sum^{b^2}_{i=\zeta}p_i$ \\
+	$dis = s -sum$ \\
+	\eIf{$dis<0$ \textnormal{or} $dis>\zeta\times(2^8-2^{8-\rho})$}
+	{
+	    $x=dis<0?\ 0:1$ \\
+		\For{$i = 1 : \zeta$}
+		{
+		    $p_i = \textnormal{Mod}(p_i,2^{8-\rho})+(2^8-2^{8-\rho})\times x$
+		}
+	}
+	{
+	    \If{$\textnormal{Mod}(dis,2^{8-\rho})\neq0$}
+	    {
+	        $x = \textnormal{Rand}(T,K_\textnormal{a},1)$ \\
+	        $dis = dis+2^{8-\rho}\times x-\textnormal{Mod}(dis,2^{8-\rho})$\\
+	    }
+	    $\mathbf{V} = \textnormal{Zeros}(k,\zeta)$ \\
+	    \For{$k=1:\rho-1$}
+	    {
+	        $up = \textnormal{Max}(\lfloor\frac{dis}{2^{8-k}}\rfloor,\zeta)$ \\
+	        $low = \textnormal{Min}(\lceil\frac{dis-\zeta\times(2^8-k-2^{8-\rho})}{2^{8-k}}\rceil,0)$ \\
+	        $res = \textnormal{Rand}(T,K_\textnormal{a},up-low)+low$ \\
+	        $\mathbf{V}(k,1:res) = 1$ \\
+	        $\mathbf{V}(k,1:\zeta) = \textnormal{Perm}(T,K_\textnormal{a},\mathbf{V}(k,1:\zeta))$ \\
+	        $dis = dis-res\times2^{8-k}$
+	    }
+	    $\mathbf{V}(\rho,1:\frac{dis}{2^{8-\rho}}) = 1$ \\
+	    $\mathbf{V}(\rho,1:\zeta) = \textnormal{Perm}(T,K_\textnormal{a},\mathbf{V}(\rho,1:\zeta))$\\
+	    \For{$i = 1:\zeta$}
+	    {
+	        $p_i = \sum_{k=1}^{\rho}\mathbf{V}(k,i)+\textnormal{Mod}(p_i,2^{8-\rho})$
+	    }
+	}
+\end{algorithm}
+
+\subsection{Pixel Permutation}
+With steps similar to $\textnormal{Perm}(\cdot)$, pixel permutation aims to scramble the pixels in a block to prevent an attacker from capturing the pattern in the pixel adjustment procedure.
+The first step is to randomly generate a permutation order based on the inputted $T$ and $K_\textnormal{p}$, i.e., 
+\begin{equation*}
+    \{x_1,\cdots, x_{b^2}\} = \textnormal{RandP}(T,K_\textnormal{p},b^2,b^2),
+\end{equation*}
+where $\textnormal{RandP}(T,K,x,n)$ returns a list of $n$ random integers, each in the range $[0,x-1]$ and different from each other.
+The second step is to rearrange the pixels within the same block in the generated permutation order.
+%For example, the pixel located at $(0,0)$ in the block and the pixel located at $(\lfloor\frac{x_1}{b}\rfloor,\textnormal{Mod}(x_1,b))$ are swapped.
+After pixel permutation, the result image $\mathbf{I}_\textnormal{res}$ (i.e., $\mathbf{I}_\textnormal{per}$) is obtained.
+
+Finally, the image encryption, pixel adjustment, and pixel permutation procedures are visually shown in Fig. \ref{Perm}.
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[scale=0.19]{Perm.pdf}
+    \caption{An example showing the specific process of image encryption, pixel adjustment, and pixel permutation ($\zeta=31,\rho=2$).}
+    \label{Perm}
+\end{figure*}
+\subsection{Image Restoration}
+The goal of this procedure is to reconstruct the whole image into the original one without any loss.
+First of all, the pixel arrangement order in each block is restored and thus $\mathbf{I}_\textnormal{dep}$ is obtained, which is the same as $\mathbf{I}_\textnormal{adj}$.
+Then, $\mathbf{I}_\textnormal{dep}$ is decrypted by stream enciphering the image again with the same key matrix $\mathbf{I}_\textnormal{key}$.
+The decrypted image $\mathbf{I}_\textnormal{dec}$ is the same as $\mathbf{I}_\textnormal{vac}$ except $\textnormal{Reg.A}_\textnormal{vac}$ of FLRD and IBRD or $\textnormal{Reg.A}$ of BBRD.
+As for AMP-RDHEI, $\textnormal{Reg.A}$ is first blocked into $2\times 2$ sub blocks and the location map $\Delta$ is obtained.
+Then, if the corresponding value in $\Delta$ is $0$, the sub block in $\textnormal{Reg.A}$ is restored by
+\begin{equation*}
+    C_i = P(1:md)\ \Vert\ e_i(md+1:8),~i\in \{1,2,3\}
+\end{equation*}
+and $\mu$ can be extracted to restore $\textnormal{Reg.A}_\textnormal{vac}$.
+As for PPBC-RDHEI, $\mathbf{I}_\textnormal{dec}$ is first split into $8$ bit-planes and the compressed version of each bit-plane is extracted, decompressed, and composited into the whole prediction error image $\mathbf{I}_\textnormal{err}$.
+The original image is then restored by the MED predictor and $\mathbf{I}_\textnormal{err}$.
+In terms of PBTL-RDHEI, the pixels in $\textnormal{Reg.E}$ except $P_\textnormal{r}$ are first divided into two sets, i.e.,
+\begin{equation*}
+    \left\{  
+             \begin{array}{ll}  
+              \mathbb{P}_\textnormal{n} = \{\mathbf{I}_\textnormal{dec}(i,j) | \mathbf{I_\textnormal{dec}(i,j)(1:\beta) =\underbrace{0\cdots 0}_{\beta}}\}, \\
+              \mathbb{P}_\textnormal{e} = \{\mathbf{I}_\textnormal{dec}(i,j)|\mathbf{I}_\textnormal{dec}(i,j)\notin \mathbb{P}_\textnormal{n}\}.
+             \end{array}  
+\right. 
+\end{equation*}
+Second, the embedded data is extracted by selecting the lowest $8-\alpha$ bits of each pixel belonging to $\mathbb{P}_\textnormal{e}$, which contains $o$ and $\mu$.
+Third, the prediction error of the pixel located at $(i,j)$ is calculated by
+\begin{equation*}
+\begin{aligned}
+    & \mathbf{e}(i,j) = \\
+    & \left\{
+    \begin{array}{ll}
+        \textnormal{Label}^{-1}(\mathbf{I}_\textnormal{dec}(i,j)(1:\alpha)), &\textnormal{if}~~\mathbf{I}_\textnormal{dec}\in\mathbb{P}_\textnormal{e},\\
+        o(x:x+\beta)\ \Vert\ \mathbf{I}_\textnormal{dec}(i,j)(\beta+1:8), &\textnormal{if}~~\mathbf{I}_\textnormal{dec}\in\mathbb{P}_\textnormal{n}.
+    \end{array}
+\right.
+\end{aligned}
+\end{equation*}
+Finally, $\textnormal{Reg.E}$ is restored by the MED predictor as well as the prediction error $\mathbf{e}$ and $\textnormal{Reg.A}_\textnormal{vac}$ is restored by extracted $\mu$, while $\textnormal{Reg.A}_\textnormal{ori}$ is already the same as the original one after image decryption.
+As for BPC-RDHEI, the recursive iteration from the LSB to the MSB is required to restore the whole image based on auxiliary information stored in the low bit-planes of $\mathbf{I}_\textnormal{dec}$.
+For more details, please refer to \cite{wang2021high,yin2020reversible,wu2019improved,puteaux2020recursive}.
+\section{Security Analysis}\label{proof}
+In this section, we provide a security analysis of our framework according to the security definitions given in Section \ref{Sec-Def}.
+%Eq. (\ref{eq3}) where a game between the adversary and defender has been played.
+%Suppose the simulator $\textnormal{F}(\mathbf{S})$ randomly generates an image with thumbnail $\mathbf{S}$.
+%The adversary $\mathcal{A}$ aims to distinguish the image processed by our framework from the randomly generated image that shares the same thumbnail as former one, which is similar to the original thumbnail.
+
+\newtheorem{thm}{\bf Theorem}
+\begin{thm}\label{thm1}
+Suppose $T$ is different for each call, our framework satisfies Eq. (\ref{eq3}), i.e., our framework is NR secure.
+\end{thm}
+
+\begin{proof}
+A distinction game is conducted with the participation of a PPT adversary $\mathcal{A}$. 
+First, $\mathcal{A}$ provides an image $\mathbf{M}$ to the game system.
+Second, $\mathbf{M}$ is processed by our framework and the result $\mathbf{C}$ is returned.
+Third, the game system randomly selects a bit $\beta\in\{0,1\}$.
+If $0$ is selected, an image $\mathbf{R}$ with the same thumbnail and dimension as $\mathbf{C}$ is randomly selected and returned to $\mathcal{A}$; otherwise, $\mathbf{C}$ is returned to $\mathcal{A}$.
+Finally, $\mathcal{A}$ is required to judge whether the received image is processed by our framework or not and output a bit $\beta'\in\{0,1\}$.
+If $\beta'=\beta$, we say that $\mathcal{A}$ succeeds. %and our framework does not satisfy the Eq. (\ref{eq3}).
+Eq. (\ref{eq3}) is satisfied if the success probability of $\mathcal{A}$ approaches $1/2$ by an negligible margin.
+%It is known that blocks in the encrypted image after stream encipher procedure is indistinguishable from any randomly generated ones.
+%In the following proof process, we focus only on a thumbnail block $\mathbf{B}$ with size of $b\times b$ in the image $\mathbf{M}$ because the processing of blocks can be viewed as independent of each other from an effect standpoint.
+
+%In the first place, we proof that the ciphertext domain is as large as the random domain, i.e., the potential number of blocks generated by our framework is equal to that of randomly selected blocks under a same block sum $s$.
+As a preparation for the proof, we define a function
+\begin{equation}
+\label{Phi}
+\Psi(t,n,k) = \{(x_1,x_2,...,x_n)|\sum_{i=1}^{n}x_i(1:k)=t\} 
+\end{equation}
+to represent a set of all pixel lists that the sum of pixels' lowest $k$ bits is $t$.
+The specific order of pixels in every list is considered here.
+Meanwhile, another function 
+\begin{equation*}
+\label{Phi2}
+\small
+\begin{aligned}
+&\Psi'(t_1,t_2,n_1,n_2,k) = \\
+&\{(x_1,x_2,...,x_n)| n=n_1+n_2, \sum_{i=1}^{n}x_i(1:k)=t_1+t_2, \\
+&\textnormal{ and }\exists(y_1,y_2,...,y_{n_1}) \subseteq (x_1,x_2,...,x_n), \sum_{i=1}^{n_1}y_{i}(1:k)=t_1\} 
+\end{aligned}
+\end{equation*}
+is defined based on Eq. (\ref{Phi}).
+The number of elements in the sets defined above can be calculated by
+\begin{equation*}
+\begin{aligned}
+    \big|\Psi(t,n,k)\big| = \sum_{t_1}(\big|\Psi(t_1,n,k-1)\big|\times C_n^{\frac{t-t_1}{k-1}})
+\end{aligned}
+\end{equation*}
+and
+\begin{equation*}
+\begin{aligned}
+\small
+    &\big|\Psi'(t_1,t_2,n_1,n_2,k)\big| = \\
+    &\sum_{t_k}\sum_{t_{k_1}} 
+    \frac{\big|\Psi'(t_{k_1},t_k-t_{k_1},n_1,n_2,k-1)\big|\times
+    C_{n_1+n_2}^{\frac{t_1+t_2-t_k}{2^{k-1}}}}{\big|\varphi(\frac{t_1+t_2-t_{k}}{2^{k-1}},n_1,n_2)\big|},
+\end{aligned}
+\end{equation*}
+where the lower limits of $t_1$, $t_k$, and $t_{k_1}$ are $\textnormal{Max}(t\bmod 2^
+    {k-1},t-n\times2^{k-1})$, $\textnormal{Max}((t_1+t_2)\bmod2^{k-1},t_1+t_2-(n_1+n_2)\times2^{k-1})$, and $\textnormal{Max}(0,t_k-n_2\times(2^{k-1}-1))$ respectively, and the upper limits are $\textnormal{Min}(t,n\times(2^{k-1}-1))$, $\textnormal{Min}(t_1+t_2,(n_1+n_2)\times(2^{k-1}-1)$, and $\textnormal{Min}(t_k,n_1\times(2^{k-1}-1)$ respectively. The step size of $t_1$ and $t_{k_1}$ is $1$, while the step size of $t_k$ is $2^{k-1}$. In addition, $\varphi(t,n_1,n_2)$ represents a set containing all pairs of integers in a particular range whose sum is $t$, i.e.,
+\begin{equation*}
+\begin{aligned}
+    &\varphi(t,n_1,n_2)=\\
+    &\{(x_1,x_2) \,|\, x_1+x_2=t, x_1\in[0,n_1], \textnormal{ and } x_2 \in[0,n_2]\}.
+\end{aligned}
+\end{equation*}
+In the next paragraph, mathematical induction is used to prove that
+\begin{equation}
+\label{eq}
+    \sum_{t_1}\big|\Psi'(t_1,t-t_1,n_1,n-n_1,k)\big|=\big|\Psi(t,n,k)\big|, 
+\end{equation}
+where the lower limit, upper limit, and step size of $t_1$ are $\textnormal{Max}(0,t-n-n_1\times(2^k-1))$, $\textnormal{Min}(t,t_1\times(2^k-1))$, and $1$, respectively. 
+
+1) if $k=1$, it is obvious that $\sum_{t_1}\big|\Psi'(t_1,t-t_1,n_1,n-n_1,1)\big| = C_{n_1+n-n_1}^{t_1+t-t_1}= C_n^t =\big|\Psi(t,n,1)\big|$.
+2) Suppose that Eq. (\ref{eq}) holds when $k=x$, we get 
+\begin{equation*}
+\begin{aligned}
+\small
+    &\sum_{t_1}\big|\Psi'(t_1,t-t_1,n_1,n-n_1,x+1)\big| \\
+    &=\sum_{t_1}\sum_{t_{x_1}}\sum_{t_{x_2}}\frac{\big|\Psi'(t_{x_1},t_{x_2},n_1,n-n_1,x)\big|\times C_{n_1+n-n_1}^{\frac{t_1-t_{x_1}+t-t_1-t_{x_2}}{2^x}}}{\big|\varphi(\frac{t_1-t_{x_1}+t-t_1-t_{x_2}}{2^x},n_1,n-n_1)\big|}\\
+    &=\sum_{t_1}\sum_{t_{x_1}}\sum_{t_{x_2}}\frac{\big|\Psi(t_{x_1}+t_{x_2},n,x)\big|\times C_{n}^{\frac{t-t_{x_1}-t_{x_2}}{2^x}}}{\big|\varphi(\frac{t-t_{x_1}-t_{x_2}}{2^x},n_1,n-n_1)\big|}\\
+    &=\sum_{t_x}\big|\Psi(t_x,n,x)\big|\times C_n^{\frac{t-t_x}{2^x}}\\
+    &=\big|\Psi(t,n,x+1)\big|
+\end{aligned}
+\end{equation*}
+when $k=x+1$. The lower limits of $t_1$, $t_{x_1}$, $t_{x_2}$, and $t_{x}$ are $\textnormal{Max}(0,t-n-n_1\times(2^k-1))$, $\textnormal{Max}(t_1\bmod2^x,t_1-n_1\times2^x)$, $\textnormal{Max}(t-t_1\bmod2^x,t-t_1-n-n_1\times2^x)$, and $\textnormal{Max}(t\bmod2^x,t-n\times2^x)$ respectively, and the upper limits are $\textnormal{Min}(t,t_1\\\times(2^k-1))$, $\textnormal{Min}(t_1,n_1\times(2^x-1))$, $\textnormal{Min}(t-t_1,n-n_1\times(2^x-1))$, and $\textnormal{Min}(t,n\times(2^x-1))$ respectively. $t_1$, $t_{x_1}$, $t_{x_2}$, and $t_{x}$ all have step sizes of $1$.
+According to the constraint of mathematical induction, Eq. (\ref{eq}) always holds. 
+
+In the following, we turn on the concrete proof from the standpoint of a thumbnail block $\mathbf{B}$ (resp. $\mathbf{B_C}$ and $\mathbf{B_R}$) with size of $b\times b$ in the image $\mathbf{M}$ (resp. $\mathbf{C}$ and $\mathbf{R}$) because the processing of blocks can be viewed as independent of each other. As shown in the pixel adjustment procedure, there are three cases for adjusting pixels in a thumbnail block.
+
+\subsubsection{$dis<0$}In this case, the sum of all nonadjustable pixels in $\mathbf{B}$ is already bigger than the adjusting target $s$, which means every bit in $\textnormal{Reg.A}_\textnormal{vac}$ should be set to $0$ to keep the absolute value of $dis$ as small as possible.
+Therefore, the sum of all pixels in both $\mathbf{B_C}$ and $\mathbf{B_R}$ is $sum$.
+The size of ciphertext and random domains is calculated by
+\begin{equation*}
+\begin{aligned}
+    count_1 = &\sum^{\substack{Min(sum,(b^2-\zeta)\\\times(2^8-2^{8-\rho})}}_{\substack{s_1=Max(0,sum\\-b^2\times(2^{8-\rho}-1)\\step=2^{8-rho}}}\big|\Psi'(0,\lfloor\frac{s_1}{2^{8-\rho}}\rfloor,\zeta,b^2-\zeta,\rho)\big|\times\\
+    &\big|\Psi(sum-s_1,b^2,8-\rho)\big|
+\end{aligned}
+\end{equation*}
+and $count_2 = \big|\Psi(sum,b^2,8)\big|$, which means that the success rate of $\mathcal{A}$ is $\frac{count_2-count_1}{count_2}$ when $sum$ and $s$ are fixed.
+Meanwhile, the occurrence frequencies of each value of $sum$ and $s$ are
+\begin{equation*}
+\begin{aligned}
+    p_{sum} = &(\sum_{\substack{s_1=Max(0,sum\\-b^2\times(2^{8-\rho}-1))\\step = 2^{8-\rho}}}^{\substack{Min(sum,(b^2-\\\zeta)\times(2^8-2^{8-\rho}))}}(\big|\Psi(\frac{s_1}{2^{8-\rho}},b^2-\zeta,\rho)\big|\times\\&\big|\Psi(sum-s_1,b*b,8-\rho)\big|))/(256^{b^2-\zeta}\times(2^{8-\rho})^\zeta)
+\end{aligned}
+\end{equation*}
+and $p_{s}=\big|\Psi(s,b^2,8)\big|/256^{b^2}$.
+In conclusion, the success rate of $\mathcal{A}$ in this situation is
+\begin{equation*}
+\begin{aligned}
+    \sum^{255\times b^2}_{s=0}~\sum_{sum=s}^{\substack{b^2\times255-\zeta\\\times(2^8-2^{8-\rho})}}p_{s}\times p_{sum} \times \frac{count_2-count_1}{count_2}.
+\end{aligned}
+\end{equation*}
+\subsubsection{$0<dis<\zeta\times(2^8-2^{8-\rho})$}In this situation, the block can be successfully adjusted, i.e., $-2^{8-\rho}\leq s'-s \leq 2^{8-\rho}$, where $s'$ denotes the sum of all pixels in the adjusted block.
+Since $\mathcal{A}$ can only obtain values of $s$ and $s'$ without knowing anything about $sum$, there are many sub situations based on different $sum$.
+For fixed $s$ and $s'$, the size of ciphertext and random domains is 
+\begin{equation*}
+\begin{aligned}
+% \small
+    &count_1\\
+    &~~=\sum_{\substack{s_1=Max(s'\bmod2^{8-\rho},\\s'-b^2\times(2^8-2^{8-\rho})\\step=2^{8-\rho}}}^{\substack{Min(s',b^2\\\times(2^{8-\rho}-1))}}~~
+    \sum_{\substack{s_2=Max(0,s'-s_1-\\(b^2-\zeta)\times(2^8-2^{8-\rho}))\\step=2^{8-\rho}}}^{\substack{Min(s'-s_1,\zeta\\\times(2^8-2^{8-\rho}))}}
+    (\big|\Psi'(\frac{s_2}{2^{8-\rho}},\\
+    &~~~~~~\frac{s'-s_1-s_2}{2^{8-\rho}},\zeta,b^2-\zeta,\rho)\big|
+    \times \big|\Psi(s_1,b^2,8-\rho)\big|)\\
+    % &=\sum_{s_1}(\big|\Psi(s_1,b^2,8-\rho)\sum_{s_2}\big|\Psi'(\frac{s_2}{2^{8-\rho}},\frac{s'-s_1-s_2}{2^{8-\rho}},\zeta,b^2-\zeta,\rho)\big|))\\
+    &~~=\sum_{s_1}(\big|\Psi(s_1,b^2,8-\rho)\big|\times\big|\Psi(\frac{s'-s_1}{2^{8-\rho}},b^2,\rho)\big|)\\
+    &~~=\big|\Psi(s',b^2,8)\big|
+\end{aligned}
+\end{equation*}
+and $count_2=\big|\Psi(s',b^2,8)\big|$, which means that the two domains are completely the same in this situation and the success rate of $\mathcal{A}$ is $0$.
+
+\subsubsection{$dis>\zeta\times(2^8-2^{8-\rho})$}In this situation, $sum$ is so small that the block fails to be successfully adjusted even though all bits in $\textnormal{Reg.A}_\textnormal{vac}$ are set to $1$.
+Therefore, the size of ciphertext and random domains is 
+\begin{equation*}
+\begin{aligned}
+    count_1 = &\sum^{\substack{Min(sum,(b^2-\zeta)\\\times(2^8-2^{8-\rho})}}_{\substack{s_1=Max(0,sum\\-b^2\times(2^{8-\rho}-1)\\step=2^{8-rho}}}\big|\Psi'(\zeta\times(2^8-2^{8-\rho}),\lfloor\frac{s_1}{2^{8-\rho}}\rfloor,\\
+    &\zeta,b^2-\zeta,\rho)\big|\times\big|\Psi(sum-s_1,b^2,8-\rho)\big|
+\end{aligned}
+\end{equation*}
+and $count_2 = \big|\Psi(sum+\zeta\times(2^8-2^{8-\rho}),b^2,8)\big|$, while $p_{sum}$ and $p_s$ is the same as the ones in the case of $dis<0$.
+As a result, the success rate of $\mathcal{A}$ in this situation is calculated as 
+\begin{equation*}
+\begin{aligned}
+    \sum^{255\times b^2}_{\substack{s=\zeta\times(2^8\\-2^{9-\rho})+1}}~\sum_{sum=0}^{\substack{s-\zeta\times(2^8\\-2^{8-\rho})-1}}p_{s}\times p_{sum} \times \frac{count_2-count_1}{count_2}.
+\end{aligned}
+\end{equation*}
+
+% Here, we define a function 
+% \begin{equation*}
+% \Psi(s,n,\zeta) = \{(x_1,x_2,...,x_n)|\sum_{i=1}^{n}x_i(1:\zeta)=s\} 
+% \end{equation*}
+% to represent a set of all pixel lists that the sum of pixels' lowest $\zeta$ bits is $s$.
+% The specific order of pixels in every list is not considered here.
+% Meanwhile, the calculation procedure of $\lvert\Psi(s,n,\zeta)\rvert$ is shown in \textbf{Algorithm \ref{proof_calcu1}}, where $\lvert\cdot\rvert$ returns the number of elements in the set.
+% Therefore, the potential number of randomly selected blocks with a pixel sum of $s$ can be calculated as $\lvert\Psi(s,b^2,8)\rvert$.
+% In the processed block, the regions $\textnormal{Reg.E}$ and $\textnormal{Reg.A}_\textnormal{ori}$ remain unchanging after the stream cipher procedure and the potential number of their pixel lists are $\lvert\Psi(s_1,b^2-\zeta,8)\rvert$ and $\lvert\Psi(s_2,\zeta,8-\rho)\rvert$, respectively, as $T$ is different for each encryption.
+% Here, $s = s_1+s_2+s_3$.
+% As for $\textnormal{Reg.A}_\textnormal{vac}$, we calculate the potential number of assignment cases for each bit to be adjusted by
+% \begin{equation*}
+% \begin{aligned}
+%     &\mathbf{low}(i) = \textnormal{Max}(0,\lfloor{\frac{s_3-(\sum_{p=1}^{\rho}2^{8-p})\times\zeta}{2^{8-i}}\rfloor}), \\ 
+%     &\mathbf{up}(i) = \textnormal{Min}(\lfloor{\frac{s_3}{2^{8-i}}\rfloor},\zeta), \\
+%     &\mathbf{number}(i) = \mathbf{up}(i) - \mathbf{low}(i),
+% \end{aligned}
+% \end{equation*}
+% where $i$ denotes the $i$-th highest bit of the pixel in $\textnormal{Reg.A}_\textnormal{vac}$.
+% It can be found that the calculation steps above are actually the same as the procedure shown in \textbf{Algorithm \ref{proof_calcu1}}.
+% Therefore, the number of cases can be calculated as $\lvert\Psi(s_3\gg(8-\rho),\zeta,\rho)\rvert$, where $\gg$ denotes the right shift operation.
+% In a word, we are supposed to proof that
+% \begin{equation*}
+% \begin{aligned}
+% \lvert\Psi(s_1,b^2-&\zeta,8)\rvert\times\lvert\Psi(s_2,\zeta,8-\rho)\rvert\\
+% &\times\lvert\Psi(s_3\gg(8-\rho),\zeta,\rho)\rvert = \lvert\Psi(s,b^2,8)\rvert
+% \end{aligned}
+% \end{equation*}
+% is established for any $s$, $s_1$, $s_2$, $s_3$, $b$, $\zeta$, and $\rho$, which can be proofed by running \textbf{Algorithm \ref{proof_calcu2}}.
+
+% In the second place, we prove that the probability of generating a specific list $(\overline{x_1}, \overline{x_2},...,\overline{x_{b^2}})$ by these two different paths is equal.
+% As for our framework, the probability can be calculated by 
+% \begin{equation*}\small
+% \begin{aligned}
+%     p_1 &= \frac{1}{\lvert\Psi(s_1,b^2-\zeta,8)\rvert}\times\frac{1}{\lvert\Psi(s_2,\zeta,8-\rho)\rvert}\times\prod \limits_{i=1}^\rho\frac{1}{\mathbf{number}(i)}  \\
+%     &= \frac{1}{\lvert\Psi(s_1,b^2-\zeta,8)\rvert}\times\frac{1}{\lvert\Psi(s_2,\zeta,8-\rho)\rvert}\times\frac{1}{\prod \limits_{i=1}^\rho \mathbf{number}(i)}  \\
+%     &=\frac{1}{\lvert\Psi(s_1,b^2-\zeta,8)\rvert\times\lvert\Psi(s_2,\zeta,8-\rho)\rvert\times\lvert\Psi(s_3\gg(8-\rho),\zeta,\rho)\rvert}  \\
+%     &= \frac{1}{\lvert\Psi(s,b^2,8)\rvert}, 
+% \end{aligned}
+% \end{equation*}
+% which indicates that the occurrence probability of each possible block obtained by our framework is evenly distributed. 
+
+We complete the proof.
+\end{proof}
+
+% \begin{algorithm}[htb]
+% \caption{Number\_calculation ($\Psi$)}
+% \label{proof_calcu1}
+% 	\LinesNumbered
+% 	\KwIn{$s$, $n$, and $k$}
+% 	\KwOut{$count$}
+% 	\eIf{$k==1$}
+% 	{
+% 		return $1$\\
+% 	}
+% 	{
+% 	    $dep = 2^{k-1}$\\
+% 	    $low = s - 2^{k-1}\times n$\\
+% 	    \If{$low < dep$}
+% 		{
+% 			$low = \textnormal{Mod}(s,dep)$\\
+% 		}
+% 		$up = (2^{k-1}-1)\times n$\\
+% 		\If{$up > s$}
+% 		{
+% 			$up = s $\\
+% 		}
+% 		$count = 0$\\
+% 		\For{$i = low : dep : up$}
+% 		{
+% 		    $ count = count + \Psi(i,n,k-1)$\\
+% 		}
+% 		return $ count $
+% 	}
+% \end{algorithm}
+% \begin{algorithm}[htb]
+% \caption{Same\_number\_proof}
+% \label{proof_calcu2}
+% 	\LinesNumbered
+% 	\KwIn{$b$ and $\rho$}
+% 	\KwOut{True or False}
+% 	\For{$\zeta = 1 : b^2$}
+% 	{
+% 	    \For{$s = 0 : 255\times b^2$}
+% 	    {
+% 	        $res1 = \Psi(s,b^2,8) $\\
+% 	        $low_1 = \textnormal{Max}(s - 255\times\zeta,0)$\\
+% 	        $up_1 = \textnormal{Min}(255\times(b^2-\zeta),s)$\\
+% 		    $count = 0$\\
+% 		    \For{$s_1 = low_1 : up_1$}
+% 		    {
+% 		        $s_{r} = s - s_1$\\
+% 		        $tmp = \sum_{i=8-\rho}^{8}2^i$, $dep = 2^{8-\rho}$\\
+% 	            $low_2 = \textnormal{Max}(s_{r} - tmp\times\zeta,\textnormal{Mod}(s_{r},dep))$\\
+% 	            $up_2 = \textnormal{Min}((2^{8-\rho}-1)\times\zeta,s_{r})$\\
+% 		        \For{$s_2 = low_2 : dep : up_2$}
+% 		        {
+% 		            $ count = count + \Psi(s_1,b^2-\zeta,8)\times \Psi(s_2,\zeta,8-\rho)\times \Psi((s-s_1-s_2)\gg(8-\rho),\zeta,\rho)$\\
+% 		        }
+% 		    }
+% 		    $res2 = count $\\
+% 		    \If{$res1 \neq res2$}
+% 		    {
+% 			    return False \\
+% 		    }
+% 	    }
+% 	}
+% 	return True\\
+% \end{algorithm}
+
+\section{Experiments}\label{experiment}
+
+\section{Feature work and conclusion}\label{conclusion}
+%\tiny
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}

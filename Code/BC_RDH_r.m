@@ -22,7 +22,7 @@ function res = BC_RDH_r( origin, blocksize, L )
         locate_map = Decompression(M*N,streams(M*N*8-31-len:M*N*8-32),1);
         length = bin2dec(char(streams(M*N*8-63-len:M*N*8-32-len)+'0')); % the total length of the compressed bit-planes
         streams = streams(M*N*8-63-len-length:M*N*8-64-len);
-        extract = length+len+64
+%         extract = length+len+64
         % decompression process 
         index = length; % index of the streams
         planes = zeros(M*N,8);
@@ -87,20 +87,24 @@ function res = BC_RDH_r( origin, blocksize, L )
         for i = 2 : 1 : M
             for j = 2 : 1 : N
                 if locate_map((i-1)*N+j) == 0 
-                    min = res(i-1,j,channal);
-                    max = res(i,j-1,channal);
-                    if min > res(i,j-1,channal)
-                        min = res(i,j-1,channal);
-                        max = res(i-1,j,channal);
+                    a = res(i-1,j,channal);
+                    b =  res(i,j-1,channal);
+                    c = res(i-1,j-1,channal);
+                    x = res(i,j,channal);
+                	min = a;
+                    max = b;
+                    if min > b
+                        min = b;
+                        max = a;
                     end
-                    if res(i-1,j-1,channal) < min
+                    if c < min
                         pred = max;
-                    elseif res(i-1,j-1,channal) > max
+                    elseif c > max
                         pred = min;
                     else
-                        pred = double(res(i-1,j,channal)) + double(res(i,j-1,channal)) - double(res(i-1,j-1,channal));
+                        pred = double(a) + double(b) - double(c);
                     end
-                    temp = dec2bin(res(i,j,channal),8);
+                    temp = dec2bin(x,8);
                     if temp(8) == '1' % the error is negative
                         res(i,j,channal) = pred - bin2dec(temp(1:7));
                     else

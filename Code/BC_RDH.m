@@ -39,7 +39,7 @@ function res = BC_RDH( origin, blocksize, L )
             temp = double(origin(i,1,chanal)) - double(origin(i-1,1,chanal));
             if temp < -127 || temp > 127
                 error(i,1) = origin(i,1,chanal);
-                locate_map((i-1)*blocksize+1) = 1;
+                locate_map((i-1)*N+1) = 1;
             else
                 if temp < 0
                     temp = dec2bin(-temp,7);
@@ -56,22 +56,26 @@ function res = BC_RDH( origin, blocksize, L )
         % middle prediction
         for i = 2 : 1 : M
             for j = 2 : 1 : N
-                min = origin(i-1,j,chanal);
-                max = origin(i,j-1,chanal);
-                if min > origin(i,j-1,chanal)
-                    min = origin(i,j-1,chanal);
-                    max = origin(i-1,j,chanal);
+                a = origin(i-1,j,chanal);
+                b =  origin(i,j-1,chanal);
+                c = origin(i-1,j-1,chanal);
+                x = origin(i,j,chanal);
+                min = a;
+                max = b;
+                if min > b
+                    min = b;
+                    max = a;
                 end
-                if origin(i-1,j-1,chanal) < min
+                if c < min
                     pred = max;
-                elseif origin(i-1,j-1,chanal) > max
+                elseif c > max
                     pred = min;
                 else
-                    pred = double(origin(i-1,j,chanal)) + double(origin(i,j-1,chanal)) - double(origin(i-1,j-1,chanal));
+                    pred = double(a) + double(b) - double(c);
                 end
-                temp = double(origin(i,j,chanal)) - double(pred);
+                temp = double(x) - double(pred);
                 if temp < -127 || temp > 127
-                    error(i,j) = origin(i,j,chanal);
+                    error(i,j) = x;
                     locate_map((i-1)*N+j) = 1;
                 else
                     if temp < 0
@@ -157,7 +161,7 @@ function res = BC_RDH( origin, blocksize, L )
         % embed the total length of the compressed bit-planes into the end of the planes 
         comp(M*N*8-63-l:M*N*8-32-l) = dec2bin(M*N*8-64-l-ci,32)-'0';
         capacity = M*N*8;
-        length = M*N*8-ci;
+        length = M*N*8-64-l-ci;
         ci/capacity*8
         streams = zeros(M*N,8);
         for i = 1 : 1 : 8
