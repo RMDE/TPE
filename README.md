@@ -1,4 +1,4 @@
-# The Second Approximate Thumbnail-preserving Image Encryption
+# A Reversible Framework for Efficient and Secure Visual Privacy Protection
 ## Direction
 - The scheme is to balance the image privacy and usability by encrypting the image while preserving the thumbnail.
 ## Application 
